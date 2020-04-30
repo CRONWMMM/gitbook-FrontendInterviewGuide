@@ -1,4 +1,6 @@
 # Table of contents
 
-* [Initial page](README.md)
+* [初始界面](README.md)
+
+## ES6
 

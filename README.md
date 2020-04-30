@@ -1,2 +1,2 @@
-# Initial page
+# 初始界面
 
