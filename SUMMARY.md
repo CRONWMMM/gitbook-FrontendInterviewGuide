@@ -13,3 +13,7 @@
 
 * [防抖和节流](xing-neng-you-hua/fang-dou-he-jie-liu.md)
 
+## ES6 <a id="es6-1"></a>
+
+* [babel](es6-1/babel.md)
+
