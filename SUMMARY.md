@@ -2,7 +2,6 @@
 
 * [初始界面](README.md)
 * [ES6](es6.md)
-* [Vue框架](vue-kuang-jia.md)
 
 ## javacript基础
 
@@ -21,6 +20,7 @@
 
 ## 前端框架
 
+* [Vue框架](qian-duan-kuang-jia/vue-kuang-jia.md)
 * [Untitled](qian-duan-kuang-jia/untitled.md)
 * [Untitled](qian-duan-kuang-jia/untitled-1.md)
 
