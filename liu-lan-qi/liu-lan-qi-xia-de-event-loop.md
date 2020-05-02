@@ -59,7 +59,7 @@ new Promise(resolve => {
   .then(function() {
     console.log('promise1')
   })
-  .then(function() {
+  .then(function() {z
     console.log('promise2')
   })
 
@@ -138,8 +138,14 @@ console.log('script end')
 ```
 
 *  `script` 脚本开头碰到了 `console.log` 于是打印 `script start`
-*  解析引擎解析至 `async1()` ，`async1` 执行环境被推入执行栈，解析引擎进入 `async1` 内部
-*  引擎发现 `async1` 内部调用了 `async2`，于是继续进入 `async 2`，并将 `async 2` 执行环境推入执行栈
-*  引擎碰到 `console.log`，于是打印 `async2 end`
-*  `async2` 函数执行完成，弹出执行栈，并返回了一个 `Promise.resolve(undefined)`，此时，`async1` `then` 注册的回调被推入 **microtask** ，`async1` 函数中的执行权被让出，等待主线程空闲
+*  解析至 `async1()` ，`async1` 执行环境被推入执行栈，解析引擎进入 `async1` 内部
+*  发现 `async1` 内部调用了 `async2`，于是继续进入 `async 2`，并将 `async 2` 执行环境推入执行栈
+*  碰到 `console.log`，于是打印 `async2 end`
+*  `async2` 函数执行完成，弹出执行栈，并返回了一个 `Promise.resolve(undefined)`，此时，由于 Promise 已经变成 resolve 状态，于是`async1` `then` 注册的回调被推入 **microtask** 
+*  解析至 `setTimeout`，等待 0ms 后将其回调推入 **macrotask**
+*  继续执行，直到碰到了 `Promise`，解析进入注入函数的内部，碰到 `console.log`，于是打印 `'Promise'`，再往下，碰到了 `resolve`，将第一个 `then` 中的回调函数推入 `micro-task` ，然后碰到了第二个 then ，继续将其中的回调函数推入 `micro-task`。
+* 执行到最后一段代码，打印 `script end`
+* 自此，第一轮 Tick 中的一个宏任务执行完成，开始执行微任务队列，通过前面的分析可以得知，目前 `micro-task` 中有三个任务，依次为：`console.log('async 1')`、`console.log('promise1')`、`console.log('promise2')`于是 Event Loop 会将这三个回调依次取到主线程执行，控制台打印：async1、promise1、promise2
+* 自此，`micro-task` 为空，浏览器开始重新渲染（如果有 DOM 操作的话）
+* Event Loop 再次启动一个新的 Tick ，从宏任务队列中拿出一个（唯一的一个）宏任务执行，打印出：setTimeout
 
