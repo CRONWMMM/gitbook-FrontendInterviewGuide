@@ -149,3 +149,8 @@ console.log('script end')
 * 自此，`micro-task` 为空，浏览器开始重新渲染（如果有 DOM 操作的话）
 * Event Loop 再次启动一个新的 Tick ，从宏任务队列中拿出一个（唯一的一个）宏任务执行，打印出：setTimeout
 
+### 相关参考
+
+1. [前端性能优化原理与实践](https://juejin.im/book/5b936540f265da0a9624b04b/section/5bb1815c6fb9a05d2d0233ad#heading-1)
+2. [前端面试之道](https://juejin.im/book/5bdc715fe51d454e755f75ef/section/5be04a8e6fb9a04a072fd2cd)
+
