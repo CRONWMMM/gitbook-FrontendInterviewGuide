@@ -241,12 +241,14 @@ CommonJS 具有如下特点：
 
 ### ESModule 实现的模块化
 
-
-
+* `ESModule` 的模块化是静态的，也就是说在编译阶段就需要确定模块之间的依赖关系，这一点不同于 `AMD / CMD / CommonJS` ，这三者都是在运行时确定模块间的依赖关系的。
+* `ESModule` 模块不是对象，而是通过 `export` 命令显示输出的指定代码的片段，再通过 `import` 命令将代码命令输入。
+* 
 
 
 ### 相关参考
 
 * [JavaScript 标准参考教程](https://javascript.ruanyifeng.com/nodejs/module.html)
 * [前端面试之道](https://juejin.im/book/5bdc715fe51d454e755f75ef/section/5bdd0d83f265da615f76ba57#heading-6)
+* [ES6 Module 的语法](https://es6.ruanyifeng.com/#docs/module)
 
