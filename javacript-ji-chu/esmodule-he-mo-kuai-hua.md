@@ -186,7 +186,7 @@ CommonJS 具有如下特点：
 2. `Node`会为每一个模块提供一个 export 变量，指向 `module.exports`：
 
    ```javascript
-   function Module (id, parent) {
+   function Module (id, parent, children) {
        this.id = id;
        this.filename = 'filename.js';
        this.loaded = false;
@@ -203,7 +203,7 @@ CommonJS 具有如下特点：
 3. 模块开发者向外部导入数据：
 
    ```javascript
-   function Module (id, parent) {
+   function Module (id, parent, children) {
        this.id = id;
        this.filename = 'filename.js';
        this.loaded = false;
