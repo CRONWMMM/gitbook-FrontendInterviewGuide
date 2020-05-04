@@ -216,12 +216,32 @@ CommonJS 具有如下特点：
    const module = new Module('uuid', null, []);
    let exports = module.exports;
 
-   module.exports = function () {}
+   module.exports = function () {
+       console.log('module message');
+   }
    ```
 
+   > **注意：**虽然 Node 原生提供了 `exports` 作为 `module.exports` 的简化写法，但是不能手动改变 `exports` 的赋值，比如这样：`exports = {}`，这样写就代表将 `module.exports` 的引用从 `exports` 上切断了。这就意味着：如果一个模块的对外接口是一个单一的值（例如：数字、函数、字符串），就不能使用 `exports` 只能使用 `module.exports` 输出 。
 
+#### 关于 require
+
+> `CommonJS` 中 `require` 的基本功能，是读入并执行一个 JavaScript 文件，然后返回该模块的 `exports` 对象，如果没有发现指定模块则报错。
+
+* require 加载文件时，默认后缀为 `.js` 后缀。
+* 如果 `require` 中的路径字符串参数以 `'/'` 开头，则会按照这个绝对路径查找文件。
+* 如果 `require` 中的路径字符串参数以 `'./'` 开头，则会以当前执行脚本位置为起点，寻找对应的相对路径下的文件。
+* 如果参数字符串不以 `'/'` 或者 `'./'` 开头，则会去寻找一个默认提供的核心模块（位于 Node 系统安装目录中），或者一个位于各级 `node_modules` 目录中的已安装模块（全局安装或者局部安装），举例来说，如果脚本 `'/home/user/projects/foo.js'` 执行了 `require('bar.js')` 命令，Node 会依次搜索以下文件：
+  * `/usr/local/lib/node/bar.js`（Node 的核心模块）
+  * `/home/user/projects/node_modules/bar.js`（当前执行脚本所在目录下的 node\_modules 文件）
+  * `/home/user/node_modules/bar.js`（执行脚本所在目录下没有 node\_modules ，则继续查找上层文件夹的 node\_modules）
+  * `/home/node_modules/bar.js`（继续查找上层的 node\_modules）
+  * `/node_modules/bar.js`（最后查找全局的 node\_modules）
+*  如果参数字符串不以“./“或”/“开头，而且是一个路径，比如`require('example-module/path/to/file')`，则将先找到`example-module`的位置，然后再以它为参数，找到后续路径。
+* 如果指定的文件没有找到，Node 会为文件名添加 `.js / .json / .node` 后缀再次尝试匹配，`.json` 文件会以 JSON 格式的文本文件解析，`.node` 文件会以编译后的二进制文件解析。
 
 ### ESModule 实现的模块化
+
+
 
 
 
