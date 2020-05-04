@@ -15,6 +15,7 @@
 ## ES6 <a id="es6-1"></a>
 
 * [babel](es6-1/babel.md)
+* [ESModule 和模块化](es6-1/esmodule-he-mo-kuai-hua.md)
 
 ## javascript 基础
 
