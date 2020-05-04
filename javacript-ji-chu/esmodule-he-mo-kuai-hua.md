@@ -33,9 +33,11 @@ description: >-
 
 ### AMD 、CMD 和 UMD
 
-#### AMD 和 CMD
+> [AMD](https://link.jianshu.com/?t=https://github.com/amdjs/amdjs-api/wiki/AMD) 是"Asynchronous Module Definition"的缩写，意思就是"异步模块定义" ，它采用异步方式加载模块，模块的加载不影响它后面语句的运行。所有依赖这个模块的语句，都定义在一个回调函数中，等到所有依赖项都加载完成之后，这个回调函数才会运行。
 
-> AMD 和 CMD 是非官方的两种 js 模块化规范，AMD 标准的代表框架是 RequireJS ，CMD 标准的代表框架是 SeaJS。
+> [CMD](https://github.com/seajs/seajs/issues/242) 是"Common Module Definition"的缩写，意思就是"公共模块定义"。CMD 可以使用 require 同步加载依赖，也可以使用 require.async 来异步加载依赖。
+
+> AMD 和 CMD 都是非官方的两种 js 模块化规范，AMD 标准的代表框架是 RequireJS ，CMD 标准的代表框架是 SeaJS。
 
 ```javascript
 // AMD
@@ -51,17 +53,23 @@ define(function(require, exports, module) {
   // 可以把 require 写在函数体的任意地方实现延迟加载
   var a = require('./a');
   a.doSomething();
+  
+  // 也可以使用 require.async 来延迟加载
+  require.async('./b', function(b) {
+    b.doSomething();
+  });
 });
 ```
 
 现在 ESModule 和 CommonJS 已经分别统一了浏览器端和 Node 端的模块加载， AMD 和 CMD 使用的比较少，不过作为很多老项目使用的模块化方案，还是值得了解一下的。
 
-AMD 和 CMD 相比，很大的一个区别就是引入模块的时机：
+AMD 和 CMD 相比，很大的一个区别就是引入模块的时机，AMD 是前置依赖，也就是说，目标模块代码执行前，必须保证所有的依赖都被引入并且执行。CMD 是后置依赖，也就是说，只有在目标代码中手动执行 `require(..)` 的时候，相关依赖才会被加载并执行。
 
-* AMD 是前置依赖，也就是说，目标模块代码执行前，必须保证所有的依赖都被引入并且执行。
-* CMD 是后置依赖，也就是说，只有在目标代码中手动执行 `require(..)` 的时候，相关依赖才会被加载并执行。
+还有一个区别就是引入模块的方式，AMD 的定位是浏览器环境，所以是异步引入；而 CMD 的定位是浏览器环境和 Node 环境，它可以使用 `require` 进行同步引入，也可以使用 `require.async` 的方式进行异步引入。
 
 #### UMD
+
+从下面的代码中不难看出，其实 `UMD` 就是一种通用的模块化方式，它将 `AMD` 和 `CMD` 以及全局注册的方式做了整合而已，我们熟悉的 `jQuery` 和很多的工具库都是使用这种模块化的方式进行引入。
 
 ```javascript
 // UMD
@@ -84,8 +92,6 @@ AMD 和 CMD 相比，很大的一个区别就是引入模块的时机：
     return myFunc;
 }));
 ```
-
-从代码中不难看出，其实 `UMD` 就是一种通用的模块化方式，将 `AMD` 和 `CMD` 以及全局注册的方式做了整合而已，我们熟悉的 `jQuery` 和很多的工具库都是使用这种模块化的方式进行引入。
 
 ### CommonJS 实现模块化
 
@@ -143,6 +149,77 @@ module.exports = {
 const { func } = require('./a.js');
 console.log(func());
 ```
+
+CommonJS 具有如下特点：
+
+* 所有代码都运行于模块作用域，不会污染全局。
+* 使用同步的方式加载，也就是说，只有加载完成才能执行后面的操作，这点和 AMD 不同，由于 CommonJS 的模块化是用在 Node 端也就是服务端，模块加载的时间损耗只是磁盘读取，这个加载速度是很快的，所以可以使用同步的方式。
+* CommonJS 支持动态导入的方式,，比如：``require(`./${path}.js`)``
+* 模块可以多次加载，但是只会在第一次加载时运行一次，然后加载结果会被缓存，后面再次加载会直接读取缓存结果，如果想让模块重新执行，就必须清除缓存。
+* 模块的加载顺序，按照其在代码中出现的顺序。
+
+我们可以来模拟一个简化版 CommonJS 的实现：
+
+1. 每一个模块内部都有一个 module 对象，代表当前模块，它需要具有以下属性：
+
+   * `module.id` 模块的唯一标识符
+   * `module.filename` 模块的文件名、
+   * `module.loaded` 返回一个布尔值，代表模块是否加载完成
+   * `module.parent` 返回一个对象，代表调用该模块的父模块
+   * `module.children` 返回一个数组，内容为这个模块所依赖的其他模块
+   * `module.exports` 最重要的一个，表示模块的对外输出内容
+
+   ```javascript
+   function Module (id, parent, children) {
+       this.id = id;
+       this.filename = 'filename.js';
+       this.loaded = false;
+       this.parent = parent;
+       this.children = children;
+       this.exports = {};
+       // ...
+   }
+
+   const module = new Module('uuid', null, []);
+   ```
+
+2. `Node`会为每一个模块提供一个 export 变量，指向 `module.exports`：
+
+   ```javascript
+   function Module (id, parent) {
+       this.id = id;
+       this.filename = 'filename.js';
+       this.loaded = false;
+       this.parent = parent;
+       this.children = children;
+       this.exports = {};
+       // ...
+   }
+
+   const module = new Module('uuid', null, []);
+   let exports = module.exports;
+   ```
+
+3. 模块开发者向外部导入数据：
+
+   ```javascript
+   function Module (id, parent) {
+       this.id = id;
+       this.filename = 'filename.js';
+       this.loaded = false;
+       this.parent = parent;
+       this.children = children;
+       this.exports = {};
+       // ...
+   }
+
+   const module = new Module('uuid', null, []);
+   let exports = module.exports;
+
+   module.exports = function () {}
+   ```
+
+
 
 ### ESModule 实现的模块化
 
