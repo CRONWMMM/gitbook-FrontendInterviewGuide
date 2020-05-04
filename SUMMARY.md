@@ -7,6 +7,7 @@
 
 * [继承及原型链](javacript-ji-chu/ji-cheng-ji-yuan-xing-lian.md)
 * [javascript 基础](javacript-ji-chu/untitled.md)
+* [模块化](javacript-ji-chu/esmodule-he-mo-kuai-hua.md)
 
 ## 性能优化
 
@@ -15,7 +16,6 @@
 ## ES6 <a id="es6-1"></a>
 
 * [babel](es6-1/babel.md)
-* [ESModule 和模块化](es6-1/esmodule-he-mo-kuai-hua.md)
 
 ## javascript 基础
 
