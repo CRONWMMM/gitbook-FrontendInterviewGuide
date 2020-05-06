@@ -392,7 +392,7 @@ export { default } from './app.vue';
 
 #### ESModule VS CommonJS
 
-ESModule 对比 CommonJS 主要有以下不同：
+`ESModule` 对比 `CommonJS` 主要有以下不同：
 
 * `CommonJS` 模块输出的是一个**值的拷贝**，`ESModule` 输出的是**值的引用**。
 
@@ -484,6 +484,18 @@ ESModule 对比 CommonJS 主要有以下不同：
 ####  ESModule 的其他细节特点
 
 * ES6 的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict";`
+* ESModule 导出的模块是只读的，不能变更，否则报错：
+
+  ```javascript
+  // lib.js
+  export let obj = {};
+
+  // main.js
+  import { obj } from './lib';
+
+  obj.prop = 123; // OK
+  obj = {}; // TypeError
+  ```
 
 
 
