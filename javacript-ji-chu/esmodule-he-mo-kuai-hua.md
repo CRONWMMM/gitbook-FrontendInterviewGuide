@@ -241,10 +241,40 @@ CommonJS 具有如下特点：
 
 ### ESModule 实现的模块化
 
-* `ESModule` 的模块化是静态的，也就是说在编译阶段就需要确定模块之间的依赖关系，这一点不同于 `AMD / CMD / CommonJS` ，这三者都是在运行时确定模块间的依赖关系的。
+* ESModule 使用 export 对外暴露接口，使用 import 导入外部接口，注意，export 导出的必须是接口
+
+  ```javascript
+  // export 第一种正确写法：
+  export var a = 1;
+  // 或者 export 函数
+  export function func () {};
+  ```
+
+  ```javascript
+  // export 第二种正确写法：
+  var a = 1;
+  function func () {}
+  export {a, func};
+
+  // 或者给改一个名字然后暴露
+  export {a as aa, func as foo};
+  ```
+
+  ```javascript
+  // export 错误写法，因为导出的不是接口而是值
+  var a = 1;
+  function func () {}
+  // 报错
+  export a;
+  // 报错
+  export 1;
+  // 报错
+  export func;
+  ```
+
 * `ESModule` 模块不是对象，而是通过 `export` 命令显示输出的指定代码的片段，再通过 `import` 命令将代码命令输入。
+* `ESModule` 的模块化是静态的，也就是说在编译阶段就需要确定模块之间的依赖关系，这一点不同于 `AMD / CMD / CommonJS` ，这三者都是在运行时确定模块间的依赖关系的。
 *  ES6 的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict";`
-* ES6 
 
 
 
