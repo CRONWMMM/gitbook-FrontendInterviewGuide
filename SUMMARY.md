@@ -1,6 +1,6 @@
 # Table of contents
 
-* [初始界面](README.md)
+* [序章](README.md)
 
 ## javacript基础
 
