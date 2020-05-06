@@ -241,40 +241,135 @@ CommonJS 具有如下特点：
 
 ### ESModule 实现的模块化
 
-* ESModule 使用 export 对外暴露接口，使用 import 导入外部接口，注意，export 导出的必须是接口
+> `ESModule` 是 ES6 提供的官方 js 模块化方案。目前浏览器还不能全面支持 `ESModule` 的语法，需要用 babel 进行解析。
+
+#### ESModule  常用语法
+
+#### ESModule VS CommonJS
+
+ESModule 对比 CommonJS 主要有以下不同：
+
+* `CommonJS` 模块输出的是一个**值的拷贝**，`ESModule` 输出的是**值的引用**。
+
+  `CommonJS` 输出的是**值的拷贝**，也就是说一旦输出，模块内部的变化就影响不到这个值
 
   ```javascript
-  // export 第一种正确写法：
-  export var a = 1;
-  // 或者 export 函数
-  export function func () {};
+  // lib.js
+  let counter = 3;
+  function incCounter() {
+    counter++;
+  }
+  module.exports = {
+    counter,
+    incCounter,
+  };
+
+
+  // main.js
+  let mod = require('./lib');
+
+  console.log(mod.counter);  // 3
+  mod.incCounter();
+  console.log(mod.counter); // 4
   ```
+
+   `mod.counter`是一个原始类型的值，会被缓存。除非写成一个函数，才能得到内部变动后的值。
 
   ```javascript
-  // export 第二种正确写法：
-  var a = 1;
-  function func () {}
-  export {a, func};
+  // lib.js
+  let counter = 3;
+  function incCounter() {
+      counter++;
+  }
+  module.exports = {
+      get counter: {
+          return counter;
+      },
+      incCounter
+  };
 
-  // 或者给改一个名字然后暴露
-  export {a as aa, func as foo};
+
+  // main.js
+  let mod = require('./lib');
+
+  console.log(mod.counter);  // 3
+  mod.incCounter();
+  console.log(mod.counter); // 3
   ```
+
+  当然，你也可以对外暴露一个对象，`CommonJS` 导出的是对象引用的值的复制，那么这种情况 ，也是能够得到内部变动的值的。
 
   ```javascript
-  // export 错误写法，因为导出的不是接口而是值
-  var a = 1;
-  function func () {}
-  // 报错
-  export a;
-  // 报错
-  export 1;
-  // 报错
-  export func;
+  // lib.js
+  let obj = {a: 1};
+  function changeA() {
+      obj.a = 2;
+  }
+  module.exports = {
+      obj,
+      changeA
+  };
+
+
+  //  main.js
+  const mod = require('./lib.js');
+  console.log(JSON.stringify(mod.obj)); // {"a":1}
+  target.changeA();
+  console.log(JSON.stringify(mod.obj)); // {"a":2}
   ```
 
-* `ESModule` 模块不是对象，而是通过 `export` 命令显示输出的指定代码的片段，再通过 `import` 命令将代码命令输入。
-* `ESModule` 的模块化是静态的，也就是说在编译阶段就需要确定模块之间的依赖关系，这一点不同于 `AMD / CMD / CommonJS` ，这三者都是在运行时确定模块间的依赖关系的。
-*  ES6 的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict";`
+  `ESModule` 输出的是**值的引用**，它不会缓存运行结果，而是动态地去被加载的模块取值，并且变量总是绑定其所在的模块：
+
+  ```javascript
+  // lib.js
+  export let counter = 3;
+  export function incCounter() {
+    counter++;
+  }
+
+  // main.js
+  import { counter, incCounter } from './lib';
+  console.log(counter); // 3
+  incCounter();
+  console.log(counter); // 4
+  ```
+
+* `ESModule` 的模块化是**静态的**，和 `CommonJS` 不同，`ESModule` 模块不是对象，而是通过 `export` 命令显示输出的指定代码的片段，再通过 `import` 命令将代码命令输入。也就是说在**编译阶段**就需要确定模块之间的依赖关系，这一点不同于 `AMD / CMD / CommonJS` ，这三者都是在**运行时**确定模块间的依赖关系的。
+
+ESModule 使用 export 对外暴露接口，使用 import 导入外部接口，注意，export 导出的必须是接口
+
+```javascript
+// export 第一种正确写法：
+export var a = 1;
+// 或者 export 函数
+export function func () {};
+```
+
+```javascript
+// export 第二种正确写法：
+var a = 1;
+function func () {}
+export {a, func};
+
+// 或者给改一个名字然后暴露
+export {a as aa, func as foo};
+```
+
+```javascript
+// export 错误写法，因为导出的不是接口而是值
+var a = 1;
+function func () {}
+// 报错
+export a;
+// 报错
+export 1;
+// 报错
+export func;
+```
+
+####  ESModule 的其他细节特点
+
+* ES6 的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict";`
 
 
 
