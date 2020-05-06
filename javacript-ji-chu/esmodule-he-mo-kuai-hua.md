@@ -245,6 +245,62 @@ CommonJS 具有如下特点：
 
 #### ESModule  常用语法
 
+```javascript
+// lib.js
+export var a = 1;
+// 或者 export 函数
+export function func () {};
+
+
+// main.js
+import { a, func } from './lib.js';
+```
+
+```javascript
+// lib.js
+var a = 1;
+function func () {}
+export {a, func};
+
+
+// main.js
+import { a, func } from './lib.js';
+```
+
+```javascript
+// lib.js
+var a = 1;
+function func () {}
+// 改一个名字然后暴露
+export {a as aa, func as foo};
+
+
+// main.js
+// 注意，这边引入的时候就必须要用更改后的名字
+import { aa, foo} from './lib.js';
+```
+
+```javascript
+// lib.js
+export default function
+```
+
+ **注意**，由于 `export` 导出的必须是接口，下面的写法会报错：
+
+```javascript
+// export 错误写法，因为导出的不是接口而是值
+var a = 1;
+function func () {}
+// 报错
+export a;
+// 报错
+export 1;
+// 报错
+export func;
+```
+
+
+
 #### ESModule VS CommonJS
 
 ESModule 对比 CommonJS 主要有以下不同：
@@ -335,37 +391,6 @@ ESModule 对比 CommonJS 主要有以下不同：
   ```
 
 * `ESModule` 的模块化是**静态的**，和 `CommonJS` 不同，`ESModule` 模块不是对象，而是通过 `export` 命令显示输出的指定代码的片段，再通过 `import` 命令将代码命令输入。也就是说在**编译阶段**就需要确定模块之间的依赖关系，这一点不同于 `AMD / CMD / CommonJS` ，这三者都是在**运行时**确定模块间的依赖关系的。
-
-ESModule 使用 export 对外暴露接口，使用 import 导入外部接口，注意，export 导出的必须是接口
-
-```javascript
-// export 第一种正确写法：
-export var a = 1;
-// 或者 export 函数
-export function func () {};
-```
-
-```javascript
-// export 第二种正确写法：
-var a = 1;
-function func () {}
-export {a, func};
-
-// 或者给改一个名字然后暴露
-export {a as aa, func as foo};
-```
-
-```javascript
-// export 错误写法，因为导出的不是接口而是值
-var a = 1;
-function func () {}
-// 报错
-export a;
-// 报错
-export 1;
-// 报错
-export func;
-```
 
 ####  ESModule 的其他细节特点
 
