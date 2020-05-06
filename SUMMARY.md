@@ -2,7 +2,7 @@
 
 * [序章](README.md)
 
-## javacript基础
+## javascript基础 <a id="javacript-ji-chu"></a>
 
 * [继承及原型链](javacript-ji-chu/ji-cheng-ji-yuan-xing-lian.md)
 * [javascript 基础](javacript-ji-chu/untitled.md)
@@ -15,8 +15,6 @@
 ## ES6 <a id="es6-1"></a>
 
 * [babel](es6-1/babel.md)
-
-## javascript 基础
 
 ## 前端框架
 
