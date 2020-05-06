@@ -61,11 +61,11 @@ define(function(require, exports, module) {
 });
 ```
 
-现在 ESModule 和 CommonJS 已经分别统一了浏览器端和 Node 端的模块加载， AMD 和 CMD 使用的比较少，不过作为很多老项目使用的模块化方案，还是值得了解一下的。
+现在 `ESModule` 和 `CommonJS` 已经分别统一了浏览器端和 Node 端的模块加载， `AMD` 和 `CMD` 使用的比较少，不过作为很多老项目使用的模块化方案，还是值得了解一下的。
 
-AMD 和 CMD 相比，很大的一个区别就是引入模块的时机，AMD 是前置依赖，也就是说，目标模块代码执行前，必须保证所有的依赖都被引入并且执行。CMD 是后置依赖，也就是说，只有在目标代码中手动执行 `require(..)` 的时候，相关依赖才会被加载并执行。
+`AMD` 和 `CMD` 相比，很大的一个区别就是引入模块的时机，`AMD` 是前置依赖，也就是说，目标模块代码执行前，必须保证所有的依赖都被引入并且执行。`CMD` 是后置依赖，也就是说，只有在目标代码中手动执行 `require(..)` 的时候，相关依赖才会被加载并执行。
 
-还有一个区别就是引入模块的方式，AMD 的定位是浏览器环境，所以是异步引入；而 CMD 的定位是浏览器环境和 Node 环境，它可以使用 `require` 进行同步引入，也可以使用 `require.async` 的方式进行异步引入。
+还有一个区别就是引入模块的方式，`AMD` 的定位是浏览器环境，所以是异步引入；而 `CMD` 的定位是浏览器环境和 Node 环境，它可以使用 `require` 进行同步引入，也可以使用 `require.async` 的方式进行异步引入。
 
 #### UMD
 
@@ -150,15 +150,33 @@ const { func } = require('./a.js');
 console.log(func());
 ```
 
-CommonJS 具有如下特点：
+使用方式四：
+
+```javascript
+// a.js
+const a = 1;
+const func = function () {
+    return a + 1;
+}
+// 利用 Node 提供的便捷写法 exports 来导出模块
+exports.func = func;
+
+
+// main.js
+const { func } = require('./a.js');
+console.log(func());
+```
+
+`CommonJS` 具有如下特点：
 
 * 所有代码都运行于模块作用域，不会污染全局。
-* 使用同步的方式加载，也就是说，只有加载完成才能执行后面的操作，这点和 AMD 不同，由于 CommonJS 的模块化是用在 Node 端也就是服务端，模块加载的时间损耗只是磁盘读取，这个加载速度是很快的，所以可以使用同步的方式。
-* CommonJS 支持动态导入的方式,，比如：``require(`./${path}.js`)``
+* 使用同步的方式加载，也就是说，只有加载完成才能执行后面的操作，这点和 `AMD` 不同，由于 `CommonJS` 的模块化是用在 Node 端也就是服务端，模块加载的时间损耗只是磁盘读取，这个加载速度是很快的，所以可以使用同步的方式。
+* `CommonJS` 支持动态导入的方式,，比如：``require(`./${path}.js`)``
 * 模块可以多次加载，但是只会在第一次加载时运行一次，然后加载结果会被缓存，后面再次加载会直接读取缓存结果，如果想让模块重新执行，就必须清除缓存。
+* `CommonJS` 模块输出的是一个**值的拷贝，**这一点会在下面的 ESModule 和 CommonJS 对比中详细说明。
 * 模块的加载顺序，按照其在代码中出现的顺序。
 
-我们可以来模拟一个简化版 CommonJS 的实现：
+我们可以来模拟一个简化版 `CommonJS` 的实现：
 
 1. 每一个模块内部都有一个 module 对象，代表当前模块，它需要具有以下属性：
 
@@ -245,6 +263,8 @@ CommonJS 具有如下特点：
 
 #### ESModule  常用语法
 
+输出变量和函数接口：
+
 ```javascript
 // lib.js
 export var a = 1;
@@ -256,6 +276,8 @@ export function func () {};
 import { a, func } from './lib.js';
 ```
 
+将内部变量函数等封装为一个对象输出：
+
 ```javascript
 // lib.js
 var a = 1;
@@ -266,6 +288,8 @@ export {a, func};
 // main.js
 import { a, func } from './lib.js';
 ```
+
+将内部变量函数等改名后封装为一个对象输出：
 
 ```javascript
 // lib.js
@@ -280,12 +304,42 @@ export {a as aa, func as foo};
 import { aa, foo} from './lib.js';
 ```
 
+`export` 输出变量和函数接口，然后在另一个文件中使用 `import *` 的方式接收：
+
 ```javascript
 // lib.js
-export default function
+export var a = 1;
+// 或者 export 函数
+export function func () {};
+
+
+// main.js
+import * from './lib.js';
+console.log(a);
+func();
+
+// 或者这么接
+import * as lib from './lib.js';
+console.log(lib.a);
+lib.func();
+
 ```
 
- **注意**，由于 `export` 导出的必须是接口，下面的写法会报错：
+怕麻烦的话，你也可以直接输出一个 `default` 默认。 `export default` 命令用于指定模块的默认输出，一个模块只能有一个默认输出，因此`export default` 命令只能使用一次。所以，`import` 命令后面不用加大括号，因为只可能唯一对应`export default` 命令：
+
+```javascript
+// lib.js
+export default function () {
+    console.log('Hello ESModule');
+}
+
+
+// main.js
+// 如果引入 default 默认值，就没有固定的名称了，叫什么都可以
+import foo from './lib.js';
+```
+
+ **需要注意！**由于 `export` 导出的必须是接口，下面的写法会报错：
 
 ```javascript
 // export 错误写法，因为导出的不是接口而是值
@@ -299,7 +353,42 @@ export 1;
 export func;
 ```
 
+但是 `export default` 例外，因为本质上，`export default` 就是输出一个叫做`default`的变量或方法，然后系统允许你为它取任意名字。所以，上面那种会报错的写法改写成 `default` 是有效的，不过注意，一个文件只能暴露一个 `default` ：
 
+```javascript
+var a = 1;
+export default a;
+```
+
+最后，还有一种 import 和 export 结合的高级写法，传说中的模块继承，这种写法我们会在某些源码的 `main.js` 中见到：
+
+```javascript
+// app.vue
+function vueComponent () {}
+export { vueComponent };
+
+
+// main.js
+export { vueComponent } from './app.vue';
+// 或者
+export { vueComponent as newVueComponent } from './app.vue';
+// 或者
+export * from './app.vue';
+// 或者
+export * as components from './app.vue'; 
+```
+
+`default` 版本的模块继承：
+
+```javascript
+// app.vue
+function vueComponent () {}
+export default vueComponent;
+
+
+// main.js
+export { default } from './app.vue';
+```
 
 #### ESModule VS CommonJS
 
