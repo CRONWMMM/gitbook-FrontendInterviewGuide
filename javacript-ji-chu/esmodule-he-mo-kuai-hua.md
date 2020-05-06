@@ -33,7 +33,7 @@ description: >-
 
 ### AMD 、CMD 和 UMD
 
-> [AMD](https://link.jianshu.com/?t=https://github.com/amdjs/amdjs-api/wiki/AMD) 是"Asynchronous Module Definition"的缩写，意思就是"异步模块定义" ，它采用异步方式加载模块，模块的加载不影响它后面语句的运行。所有依赖这个模块的语句，都定义在一个回调函数中，等到所有依赖项都加载完成之后，这个回调函数才会运行。
+> [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) 是"Asynchronous Module Definition"的缩写，意思就是"异步模块定义" ，它采用异步方式加载模块，模块的加载不影响它后面语句的运行。所有依赖这个模块的语句，都定义在一个回调函数中，等到所有依赖项都加载完成之后，这个回调函数才会运行。
 
 > [CMD](https://github.com/seajs/seajs/issues/242) 是"Common Module Definition"的缩写，意思就是"公共模块定义"。CMD 可以使用 require 同步加载依赖，也可以使用 require.async 来异步加载依赖。
 
