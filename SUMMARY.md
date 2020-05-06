@@ -2,25 +2,25 @@
 
 * [序章](README.md)
 
-## javascript基础 <a id="javacript-ji-chu"></a>
+## javascript 基础 <a id="javascript-basics"></a>
 
-* [继承及原型链](javacript-ji-chu/ji-cheng-ji-yuan-xing-lian.md)
-* [javascript 基础](javacript-ji-chu/untitled.md)
-* [模块化](javacript-ji-chu/esmodule-he-mo-kuai-hua.md)
+* [继承及原型链](javascript-basics/prototype-chain-and-inheritance.md)
+* [javascript 基础](javascript-basics/javascript-basics.md)
+* [模块化](javascript-basics/modularization.md)
 
-## 性能优化
+## 性能优化 <a id="performance-optimization"></a>
 
-* [防抖和节流](xing-neng-you-hua/fang-dou-he-jie-liu.md)
+* [防抖和节流](performance-optimization/deounce-throttle.md)
 
-## ES6 <a id="es6-1"></a>
+## ES6
 
-* [babel](es6-1/babel.md)
+* [babel](es6/babel.md)
 
-## 前端框架
+## 前端框架 <a id="frontend-frame"></a>
 
-* [Vue框架](qian-duan-kuang-jia/vue-kuang-jia.md)
+* [Vue框架](frontend-frame/vue-frame.md)
 
-## 浏览器
+## 浏览器 <a id="browser"></a>
 
-* [浏览器下的 Event Loop](liu-lan-qi/liu-lan-qi-xia-de-event-loop.md)
+* [浏览器下的 Event Loop](browser/event-loop-in-browser.md)
 
