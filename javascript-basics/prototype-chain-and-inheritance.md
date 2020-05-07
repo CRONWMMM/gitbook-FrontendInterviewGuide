@@ -162,3 +162,7 @@ child.getValue()
 child instanceof Parent
 ```
 
+### 相关参考
+
+* [JavaScript 深入之从原型到原型链](https://github.com/mqyqingfeng/Blog/issues/2)
+
