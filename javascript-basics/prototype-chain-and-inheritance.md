@@ -94,7 +94,115 @@ const person = new Person();
 
 * 函数都会有 `prototype` ，除了 `Function.prototype.bind()` 之外。
 * 对象都会有 `__proto__` ，除了 `Object.prototype` 之外（其实它也是有的，之不过是 `null`）。
-* Fon
+* 所有函数都由 Function 创建而来，也就是说他们的 \_\_proto\_\_ 都等于 Function.prototype。 
+* `Function.prototype` 等于 `Function.__proto__` 。
+
+### 原型污染
+
+> 原型污染是指：攻击者通过某种手段修改 JavaScript 对象的原型。
+
+什么意思呢，原理其实很简单。如果我们把 `Object.prototype.toString` 改成这样：
+
+```javascript
+Object.prototype.toString = function () {alert('原型污染')};
+let obj = {};
+obj.toString();
+```
+
+那么当我们运行这段代码的时候浏览器就会弹出一个 `alert`，对象原生的 `toString` 方法被改写了，所有对象当调用 `toString` 时都会受到影响。
+
+你可能会说，怎么可能有人傻到在源码里写这种代码，这不是搬起石头砸自己的脚么？没错，没人会在源码里这么写，但是攻击者可能会通过**表单**或者**修改请求内容**等方式使用原型污染发起攻击，来看下面一种情况：
+
+```javascript
+'use strict';
+ 
+const express = require('express');
+const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser');
+const path = require('path');
+ 
+const isObject = obj => obj && obj.constructor && obj.constructor === Object;
+ 
+function merge(a, b) {
+    for (var attr in b) {
+        if (isObject(a[attr]) && isObject(b[attr])) {
+            merge(a[attr], b[attr]);
+        } else {
+            a[attr] = b[attr];
+        }
+    }
+    return a
+}
+ 
+function clone(a) {
+    return merge({}, a);
+}
+ 
+// Constants
+const PORT = 8080;
+const HOST = '0.0.0.0';
+const admin = {};
+ 
+// App
+const app = express();
+app.use(bodyParser.json())
+app.use(cookieParser());
+ 
+app.use('/', express.static(path.join(__dirname, 'views')));
+app.post('/signup', (req, res) => {
+    var body = JSON.parse(JSON.stringify(req.body));
+    var copybody = clone(body)
+    if (copybody.name) {
+        res.cookie('name', copybody.name).json({
+            "done": "cookie set"
+        });
+    } else {
+        res.json({
+            "error": "cookie not set"
+        })
+    }
+});
+app.get('/getFlag', (req, res) => {
+    var аdmin = JSON.parse(JSON.stringify(req.cookies))
+    if (admin.аdmin == 1) {
+        res.send("hackim19{}");
+    } else {
+        res.send("You are not authorized");
+    }
+});
+app.listen(PORT, HOST);
+console.log(`Running on http://${HOST}:${PORT}`);
+```
+
+如果服务器中有上述的代码片段，攻击者只要将 `cookie` 设置成`{__proto__: {admin:  1}}` 就能完成系统的侵入。
+
+####  原型污染的解决方案
+
+在看原型污染的解决方案之前，我们可以看下 lodash 团队之前解决原型污染问题的手法：
+
+![](../.gitbook/assets/prototypepollution.jpg)
+
+代码很简单，只要是碰到有 `constructor` 或者 `__proto__` 这样的敏感词汇，就直接退出执行了。
+
+1.  使用 `Object.create(null)`， 方法创建一个原型为 `null` 的新对象，这样无论对 原型做怎样的扩展都不会生效：
+
+   ```javascript
+   const obj = Object.create(null);
+   obj.__proto__ = { hack: '污染原型的属性' };
+   console.log(obj); // => {}
+   console.log(obj.hack); // => undefined
+   ```
+
+2. 使用 `Object.freeze(obj)` 冻结指定对象，使之不能被修改属性，成为不可扩展对象：
+
+   ```javascript
+   Object.freeze(Object.prototype);
+
+   Object.prototype.toString = 'evil';
+
+   console.log(Object.prototype.toString);
+   // => ƒ toString() { [native code] }
+   ```
 
 ### 原型继承的两种常见方式
 
