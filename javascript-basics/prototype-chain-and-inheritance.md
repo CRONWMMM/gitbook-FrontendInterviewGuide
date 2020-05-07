@@ -15,7 +15,7 @@ description: >-
 
 ![](../.gitbook/assets/__proto__.jpg)
 
-在控制台打印一个空对象时，我们可以看到，有很多方法，已经“初始化”挂载在内置的 `__proto__` 对象上了。这个内置的 `__proto__` 是一个指向原型对象的指针，它会在创建一个新的引用类型对象时（显示或者隐式）自动创建，并挂载到新实例上。这个 `__proto__` 是不可枚举的，当我们尝试访问实例对象上的某一属性 / 方法时，如果实例对象上有该属性 / 方法时，就返回实例属性 / 方法，如果没有，就去 `__proto__` 指向的原型对象上查找对应的属性 / 方法。这就是为什么我们尝试访问空对象的 `toString` 和 `valueOf` 等方法依旧能访问到的原因，**`JavaScript` 正式以这种方式为基础来实现继承的。**
+在控制台打印一个空对象时，我们可以看到，有很多方法，已经“初始化”挂载在内置的 `__proto__` 对象上了。这个内置的 `__proto__` 是一个指向原型对象的指针，它会在创建一个新的引用类型对象时（显示或者隐式）自动创建，并挂载到新实例上。当我们尝试访问实例对象上的某一属性 / 方法时，如果实例对象上有该属性 / 方法时，就返回实例属性 / 方法，如果没有，就去 `__proto__` 指向的原型对象上查找对应的属性 / 方法。这就是为什么我们尝试访问空对象的 `toString` 和 `valueOf` 等方法依旧能访问到的原因，**`JavaScript` 正式以这种方式为基础来实现继承的。**
 
 #### 构造函数
 
@@ -54,8 +54,6 @@ const person = new Person();
 * 原型对象找到即返回，找不到，继续通过原型对象的 \_\_proto\_\_ 查找。
 * 一层一层一直找到 `Object.prototype` ，如果找到目标属性即返回，找不到就返回 `undefined`，不会再往下找，因为在往下找 `__proto__` 就是 `null` 了。
 
-#### 再深入一点
-
 通过上面的解释，对于构造函数生成的实例，我们应该能了解它的原型对象了。JavaScript 中万物皆对象，那么构造函数肯定也是个对象，是对象就有 `__proto__` ，那么构造函数的 `__proto__` 是什么？
 
 我们可以打印出来看一下：
@@ -79,6 +77,24 @@ const person = new Person();
 * 为了保持与其他函数保持一致
 * 为了说明一种关系，比如证明所有的函数都是 `Function` 的实例。
 * 函数都是可以调用 `call` `bind` 这些内置 API 的，这么写可以很好的保证函数实例能够使用这些 API。
+
+#### 注意点：
+
+关于原型、原型链和构造函数有几点需要注意：
+
+*  `__proto__` 是非标准属性，如果要访问一个对象的原型，建议使用 ES6 新增的 `Reflect.getPrototypeOf` 或者 `Object.getPrototypeOf()` 方法，而不是直接 obj.\_\_proto\_\_，因为非标准属性意味着未来可能直接会修改或者移除该属性。同理，当改变一个对象的原型时，最好也使用 `ES6` 提供的 `Reflect.setPrototypeOf` 或 `Object.setPrototypeOf`。
+
+  ```javascript
+  let target = {};
+  let newProto = {};
+  Reflect.getPrototypeOf(target) === newProto; // false
+  Reflect.setPrototypeOf(target, newProto);
+  Reflect.getPrototypeOf(target) === newProto; // true
+  ```
+
+* 函数都会有 `prototype` ，除了 `Function.prototype.bind()` 之外。
+* 对象都会有 `__proto__` ，除了 `Object.prototype` 之外（其实它也是有的，之不过是 `null`）。
+* Fon
 
 ### 原型继承的两种常见方式
 
