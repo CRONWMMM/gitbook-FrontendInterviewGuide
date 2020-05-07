@@ -34,7 +34,7 @@ const person = new Person();
 
 原型对象正是在构造函数被声明时一同创建的。构造函数被申明时，原型对象也一同完成创建，然后挂载到构造函数的 `prototype` 属性上：
 
-![](../.gitbook/assets/constructorandprototype.jpg)
+![](../.gitbook/assets/constructorandprototype%20%281%29.jpg)
 
 原型对象被创建时，会自动生成一个 `constructor` 属性，指向创建它的构造函数。这样它俩的关系就被紧密地关联起来了。
 
@@ -61,6 +61,14 @@ const person = new Person();
 我们可以打印出来看一下：
 
 ![](../.gitbook/assets/image%20%281%29.png)
+
+现在才想起来所有的函数可以使用 `new Function()` 的方式创建，那么这个答案也就很自然了，有点意思，再来试试别的构造函数。
+
+![](../.gitbook/assets/constructorand__proto__.jpg)
+
+这也证明了，所有函数都是 `Function` 的实例。等一下，好像有哪里不对，那么 `Function.__proto__` 岂不是。。。
+
+![](../.gitbook/assets/kedakeda.jpg)
 
 ### 原型继承的两种常见方式
 
