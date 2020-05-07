@@ -207,6 +207,82 @@ console.log(`Running on http://${HOST}:${PORT}`);
 3. 建立 `JSON schema` ，在解析用户输入内容时，通过 `JSON schema` 过滤敏感键名。
 4. 规避不安全的递归性合并。这一点类似 `lodash` 修复手段，完善了合并操作的安全性，对敏感键名跳过处理。
 
+### 继承 
+
+终于可以来说说继承了，先来看看继承的概念，看下百度上是怎么说的：
+
+> **继承**是[面向对象](https://baike.baidu.com/item/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/2262089)软件技术当中的一个概念，与[多态](https://baike.baidu.com/item/%E5%A4%9A%E6%80%81/2282489)、[封装](https://baike.baidu.com/item/%E5%B0%81%E8%A3%85/2796965)共为[面向对象](https://baike.baidu.com/item/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/2262089)的三个基本特征。继承可以使得子类具有父类的[属性](https://baike.baidu.com/item/%E5%B1%9E%E6%80%A7/20192958)和[方法](https://baike.baidu.com/item/%E6%96%B9%E6%B3%95/3009352)或者重新定义、追加属性和方法等。
+
+这段对于程序员来说，这个解释还是比较好理解的。接着往下翻，我看到了一条重要的描述：
+
+> 子类的创建可以增加新数据、新功能，可以继承父类全部的功能，但是不能选择性的继承父类的部分功能。**继承是类与类之间的关系，不是对象与对象之间的关系。**
+
+这就尴尬了，`JavaScript` 里哪里来的类，只有对象。那照这么说岂不是不能实现纯正的继承了？所以才会有开头那句话：**与其叫继承，委托的说法反而更准确些。**
+
+但是 ****`JavaScript` 是非常灵活的， 灵活这一特点给它带来很多缺陷的同时，也缔造出很多惊艳的优点。没有原生提供类的继承不要紧，我们可以用更多元的方式来实现 `JavaScript` 中的继承，比如说利用 `Object.assign`：
+
+```javascript
+let person = { name: null, age: null };
+let man = Object.assign({}, person, { name: 'John', age: 23 });
+console.log(man);  // => { name: 'John', age: 23 }
+```
+
+利用  `call` 和 `apply`：
+
+```javascript
+let person = {
+    name: null,
+    sayName: function () {
+        console.log(this.name);
+    },
+    sayAge: function () {
+        console.log(this.age);
+    }
+};
+let man = { name: 'Man', age: 23 };
+person.sayName.call(man); // => Man
+person.sayAge.apply(man); // => 23
+```
+
+甚至我们还可以使用深拷贝对象的方式来完成类似继承的操作……`JS` 中实现继承的手法多种多样，但是看看上面的代码不难发现一些问题：
+
+* 封装性不强，过于凌乱，写起来十分不便。
+* 根本无法判断子对象是从何处继承而来。
+
+有没有办法解决这些问题呢？我们可以使用 `JavaScript` 中继承最常用的方式：**原型继承**
+
+### 原型继承
+
+> 原型继承，就是让对象实例通过原型链的方式串联起来，当访问目标对象的某一属性时，能顺着原型链进行查找，从而达到类似继承的效果。
+
+```javascript
+// 父类
+function Person (name) {
+    this.name = name;
+}
+Person.prototype.sayName = function () {
+    console.log(this.name);
+};
+
+// 子类
+function Man (name) {
+    this.name = name;
+}
+Man.prototype = new Person();
+Man.prototype.constructor = Man;
+
+let person = new Person('person');
+let man = new Man('man');
+person.sayName(); // => person
+man.sayName(); // => man
+```
+
+通过以上的代码，可以看到，`man` 里面没有 `sayName` 方法，但可以调用原型中的 `sayName` ，**原型继承的关键步骤就在于：将子类原型和父类原型关联起来，使原型链能够衔接上。**这边是直接将子类原型指向了父类实例来完成关联。
+
+上面就是原型继承的一种最初始的状态，我们分析上面代码，会发现还是会有问题：
+
+1. 子类只能继承父类的原型属性，如果要在实例属性上继承相同的生成逻辑，就还需要写一遍代码。
+2. 
 ### 原型继承的两种常见方式
 
 * 组合继承：子类构造方法中用 call 调用，父类构造方法并传入参数，更改子类构造方法原型为父类实例
