@@ -257,32 +257,35 @@ person.sayAge.apply(man); // => 23
 
 ```javascript
 // 父类
-function Person (name) {
-    this.name = name;
+function SuperType (colors = ['red', 'blue', 'green']) {
+    this.colors = colors;
 }
-Person.prototype.sayName = function () {
-    console.log(this.name);
-};
 
 // 子类
-function Man (name) {
-    this.name = name;
-}
-Man.prototype = new Person();
-Man.prototype.constructor = Man;
+function SubType () {}
+// 继承父类
+SubType.prototype = new SuperType();
+// 以这种方式将 constructor 属性指回 SubType 会改变 constructor 为可遍历属性
+SubType.prototype.constructor = SubType;
 
-let person = new Person('person');
-let man = new Man('man');
-person.sayName(); // => person
-man.sayName(); // => man
+let superInstance1 = new SuperType(['yellow', 'pink']);
+let subInstance1 = new SubType();
+let subInstance2 = new SubType();
+superInstance1.colors; // => ['yellow', 'pink']
+subInstance1.colors; // => ['red', 'blue', 'green']
+subInstance2.colors; // => ['red', 'blue', 'green']
+subInstance1.colors.push('black');
+subInstance1.colors; // => ['red', 'blue', 'green', 'black']
+subInstance2.colors; // => ['red', 'blue', 'green', 'black']
 ```
 
-通过以上的代码，可以看到，`man` 里面没有 `sayName` 方法，但可以调用原型中的 `sayName` ，**原型继承的关键步骤就在于：将子类原型和父类原型关联起来，使原型链能够衔接上。**这边是直接将子类原型指向了父类实例来完成关联。
+上述代码使用了最基本的原型链继承使得子类能够继承父类的属性，**原型继承的关键步骤就在于：将子类原型和父类原型关联起来，使原型链能够衔接上，**这边是直接将子类原型指向了父类实例来完成关联。
 
-上面就是原型继承的一种最初始的状态，我们分析上面代码，会发现还是会有问题：
+上述是原型继承的一种最初始的状态，我们分析上面代码，会发现还是会有问题：
 
-1. 子类只能继承父类的原型属性，如果要在实例属性上继承相同的生成逻辑，就还需要写一遍代码。
-2. 
+1. 在创建子类实例的时候，不能向超类型的构造函数中传递参数。
+2. 这样创建的子类原型会包含父类的实例属性，造成引用类型属性同步修改的问题。
+
 ### 原型继承的两种常见方式
 
 * 组合继承：子类构造方法中用 call 调用，父类构造方法并传入参数，更改子类构造方法原型为父类实例
