@@ -4,7 +4,7 @@
 
 ## javascript 基础 <a id="javascript-basics"></a>
 
-* [继承及原型链](javascript-basics/prototype-chain-and-inheritance.md)
+* [原型链及继承](javascript-basics/prototype-chain-and-inheritance.md)
 * [javascript 基础](javascript-basics/javascript-basics.md)
 * [模块化](javascript-basics/modularization.md)
 
