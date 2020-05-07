@@ -182,7 +182,7 @@ console.log(`Running on http://${HOST}:${PORT}`);
 
 ![](../.gitbook/assets/prototypepollution.jpg)
 
-代码很简单，只要是碰到有 `constructor` 或者 `__proto__` 这样的敏感词汇，就直接退出执行了。
+代码很简单，只要是碰到有 `constructor` 或者 `__proto__` 这样的敏感词汇，就直接退出执行了。这当然是一种防止原型污染的有效手段，当然我们还有其他手段：
 
 1.  使用 `Object.create(null)`， 方法创建一个原型为 `null` 的新对象，这样无论对 原型做怎样的扩展都不会生效：
 
@@ -203,6 +203,9 @@ console.log(`Running on http://${HOST}:${PORT}`);
    console.log(Object.prototype.toString);
    // => ƒ toString() { [native code] }
    ```
+
+3. 建立 `JSON schema` ，在解析用户输入内容时，通过 `JSON schema` 过滤敏感键名。
+4. 规避不安全的递归性合并。这一点类似 `lodash` 修复手段，完善了合并操作的安全性，对敏感键名跳过处理。
 
 ### 原型继承的两种常见方式
 
@@ -289,4 +292,5 @@ child instanceof Parent
 ### 相关参考
 
 * [JavaScript 深入之从原型到原型链](https://github.com/mqyqingfeng/Blog/issues/2)
+* [最新：Lodash 严重安全漏洞背后你不得不知道的 JavaScript 知识](https://juejin.im/post/5d271332f265da1b934e2d48#heading-5)
 
