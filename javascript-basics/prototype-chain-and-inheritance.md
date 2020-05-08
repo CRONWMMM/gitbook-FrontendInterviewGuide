@@ -336,35 +336,15 @@ function Child(value) {
 Child.prototype = Object.create(Parent.prototype, {
     constructor: {
         value: Child,
-        enumerable: false,
-        writable: true,
-        configurable: true
+        enumerable: false, // 不可枚举该属性
+        writable: true, // 可改写该属性
+        configurable: true // 可用 delete 删除该属性
     }
 })
 
 const child = new Child(1)
 child.getValue();
 child instanceof Parent;
-```
-
-### ES6 的 class 继承
-
-1. class 继承：class 只是语法糖，本质上还是使用构造函数的原型链继承
-
-```javascript
-class Parent {
-    constructor(value) {this.value = value;}
-
-    getValue() {console.log(this.value);}
-}
-
-class Child extends Parent {
-    constructor(value) {super(value)}
-}
-
-let child = new Child(1)
-child.getValue()
-child instanceof Parent
 ```
 
 ### 相关参考
