@@ -409,4 +409,5 @@ console.log(Object.prototype.isPrototypeOf(baz)); // true
 
 * [JavaScript 深入之从原型到原型链](https://github.com/mqyqingfeng/Blog/issues/2)
 * [最新：Lodash 严重安全漏洞背后你不得不知道的 JavaScript 知识](https://juejin.im/post/5d271332f265da1b934e2d48#heading-5)
+* [前端面试之道](https://juejin.im/book/5bdc715fe51d454e755f75ef)
 
