@@ -370,15 +370,16 @@ child instanceof Parent; // => true
 child instanceof Object; // => true
 ```
 
-`instanceof` 本质上是通过原型链查找来判断继承关系的，因此只能用来判断引用类型，对基本类型无效，我们可以手动实现一个 `instanceof`：
+`instanceof` 本质上是通过原型链查找来判断继承关系的，因此只能用来判断引用类型，对基本类型无效，我们可以手动实现一个简易版 `instanceof`：
 
 ```javascript
 function _instanceof (obj, Constructor) {
+    if (typeof obj !== 'object' || obj == null) return false;
     let construProto = Constructor.prototype;
     let objProto = obj.__proto__;
     while (objProto != null) {
         if (objProto === construProto) return true;
-        objProto = obj.__proto__.__proto__;
+        objProto = objProto.__proto__;
     }
     return false;
 }
@@ -386,7 +387,7 @@ function _instanceof (obj, Constructor) {
 
 #### Object.prototype.isPrototypeOf\(obj\)
 
-`Object.prototype.isPrototypeOf` 方法用于判断一个对象是否存在于另一个对象的原型链上：
+还可以利用 `Object.prototype.isPrototypeOf` 来间接判断继承关系，该方法用于判断一个对象是否存在于另一个对象的原型链上：
 
 ```javascript
 function Foo() {}
