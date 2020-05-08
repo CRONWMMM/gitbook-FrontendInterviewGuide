@@ -11,7 +11,7 @@ description: >-
 
 #### 原型
 
-> 当我们 new 了一个新的对象实例，明明什么都没有做，就直接可以访问 toString 、valueOf 等原生方法。那么这些方法是从哪里来的呢？答案就是原型。
+> 当我们 `new` 了一个新的对象实例，明明什么都没有做，就直接可以访问 `toString` 、`valueOf` 等原生方法。那么这些方法是从哪里来的呢？答案就是原型。
 
 ![](../.gitbook/assets/__proto__.jpg)
 
@@ -346,6 +346,8 @@ const child = new Child(1)
 child.getValue();
 child instanceof Parent;
 ```
+
+寄生组合继承的模式是现在业内公认的比较可靠的 `JS` 继承模式，`ES6` 的 `class` 继承在 `babel` 转移后，底层也是使用的寄生组合继承的方式实现的，这个会在 `ES6 class` 模块里详细说明。
 
 ### 相关参考
 
