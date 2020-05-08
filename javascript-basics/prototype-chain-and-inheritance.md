@@ -347,7 +347,33 @@ child.getValue();
 child instanceof Parent;
 ```
 
-寄生组合继承的模式是现在业内公认的比较可靠的 `JS` 继承模式，`ES6` 的 `class` 继承在 `babel` 转移后，底层也是使用的寄生组合继承的方式实现的，这个会在 `ES6 class` 模块里详细说明。
+寄生组合继承的模式是现在业内公认的比较可靠的 `JS` 继承模式，`ES6` 的 `class` 继承在 `babel` 转义后，底层也是使用的寄生组合继承的方式实现的，这个会在 `ES6 class` 模块里详细说明。
+
+### 继承关系判断
+
+#### instanceOf
+
+`instanceOf` 本质上是通过原型链查找来判断继承关系的。
+
+#### Object.prototype.isPrototypeOf\(obj\)
+
+`Object.prototype.isPrototypeOf` 方法用于判断一个对象是否存在于另一个对象的原型链上：
+
+```javascript
+function Foo() {}
+function Bar() {}
+function Baz() {}
+
+Bar.prototype = Object.create(Foo.prototype);
+Baz.prototype = Object.create(Bar.prototype);
+
+var baz = new Baz();
+
+console.log(Baz.prototype.isPrototypeOf(baz)); // true
+console.log(Bar.prototype.isPrototypeOf(baz)); // true
+console.log(Foo.prototype.isPrototypeOf(baz)); // true
+console.log(Object.prototype.isPrototypeOf(baz)); // true
+```
 
 ### 相关参考
 
