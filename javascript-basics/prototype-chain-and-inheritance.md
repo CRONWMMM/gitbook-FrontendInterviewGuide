@@ -351,9 +351,38 @@ child instanceof Parent;
 
 ### 继承关系判断
 
-#### instanceOf
+当我们使用了原型链继承后，怎样判断对象实例和目标类型之间的关系呢？
 
-`instanceOf` 本质上是通过原型链查找来判断继承关系的。
+#### instanceof
+
+我们可以使用 `instanceof` 来判断二者间是否有继承关系，`instanceof` 的字面意思就是：xx 是否为 xxx 的实例。如果是则返回 `true` 否则返回 `false`：
+
+```javascript
+function Parent () {}
+function Child () {}
+Child.prototype = new Parent();
+let parent = new Parent();
+let child = new Child();
+
+parent instanceof Parent; // => true
+child instanceof Child; // => true
+child instanceof Parent; // => true
+child instanceof Object; // => true
+```
+
+`instanceof` 本质上是通过原型链查找来判断继承关系的，因此只能用来判断引用类型，对基本类型无效，我们可以手动实现一个 `instanceof`：
+
+```javascript
+function _instanceof (obj, Constructor) {
+    let construProto = Constructor.prototype;
+    let objProto = obj.__proto__;
+    while (objProto != null) {
+        if (objProto === construProto) return true;
+        objProto = obj.__proto__.__proto__;
+    }
+    return false;
+}
+```
 
 #### Object.prototype.isPrototypeOf\(obj\)
 
