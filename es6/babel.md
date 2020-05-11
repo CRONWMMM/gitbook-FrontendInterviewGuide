@@ -9,7 +9,9 @@ description: >-
 
 ### 什么是 babel
 
-> `babel` 负责解析新的 `ESMAScript` 的标准，`babel` 运行编译时，会从项目根目录下读取 `.babelrc` 的配置文件，通过分析预设（presets）和插件（plugins）等配置项目，来对最新语法进行编译。
+{% hint style="info" %}
+`babel` 负责解析新的 `ESMAScript` 的标准，`babel` 运行编译时，会从项目根目录下读取 `.babelrc` 的配置文件，通过分析预设（presets）和插件（plugins）等配置项目，来对最新语法进行编译。
+{% endhint %}
 
 ### babel、babel-polyfill 和 babel-runtime
 
