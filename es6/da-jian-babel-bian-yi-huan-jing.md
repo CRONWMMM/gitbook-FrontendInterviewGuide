@@ -87,5 +87,7 @@ $ npx mocha --version
 
 好了，`babel` 编译环境已经搞定，下面就可以愉快的使用 `ES6` 了~
 
+### 相关参考
 
+* [ES6-babel 编译环境搭建](https://www.cnblogs.com/padding1015/p/10801214.html)
 
