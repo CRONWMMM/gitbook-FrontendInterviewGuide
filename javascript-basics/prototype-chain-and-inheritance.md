@@ -11,7 +11,9 @@ description: >-
 
 #### 原型
 
-> 当我们 `new` 了一个新的对象实例，明明什么都没有做，就直接可以访问 `toString` 、`valueOf` 等原生方法。那么这些方法是从哪里来的呢？答案就是原型。
+{% hint style="info" %}
+当我们 new 了一个新的对象实例，明明什么都没有做，就直接可以访问 toString 、valueOf 等原生方法。那么这些方法是从哪里来的呢？答案就是原型。
+{% endhint %}
 
 ![](../.gitbook/assets/__proto__.jpg)
 
