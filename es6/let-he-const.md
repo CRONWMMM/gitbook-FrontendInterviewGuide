@@ -127,6 +127,28 @@ result.forEach(function (item) {
 * `let` 定义的变量不会进行变量声明提升操作，这一特性也被成为暂时性死区。
 * `var` 定义的变量存在变量声明提升，因此在变量定义前就能访问到变量。
 
+```javascript
+console.log(a); // undefined
+var a = 1;
+
+console.log(b); // Uncaught ReferenceError: Cannot access 'b' before initialization
+let b = 2;
+```
+
+同样我们来看下上面这段代码被编译后的样子：
+
+```javascript
+"use strict";
+
+console.log(a);
+var a = 1;
+
+console.log(b);
+var b = 2;
+```
+
+看起来好像 `Babel` 无法编译这种阻止变量声明提升的语法，暂时性死区的特性应该是浏览器内部的 JS 执行引擎支持和实现的。
+
 #### 可否重复定义
 
 * `let` 定义的变量，一旦定义便不允许被重新定义。
