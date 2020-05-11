@@ -15,6 +15,7 @@
 ## ES6
 
 * [babel](es6/babel.md)
+* [搭建 babel 编译环境](es6/da-jian-babel-bian-yi-huan-jing.md)
 
 ## 前端框架 <a id="frontend-frame"></a>
 
