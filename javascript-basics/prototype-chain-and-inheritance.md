@@ -38,8 +38,6 @@ const person = new Person();
 
 原型对象被创建时，会自动生成一个 `constructor` 属性，指向创建它的构造函数。这样它俩的关系就被紧密地关联起来了。
 
-> 细心的话，你可能会发现，原型对象也有自己的 `__proto__` ，这也不奇怪，毕竟万物皆对象嘛。原型对象的 \_\_proto\_\_ 指向的是 `Object.prototype`。那么 `Object.prototype.__proto__` 存不存在呢？其实是不存在的，打印的话会发现是 `null` 。这也证明了 `Object` 是 `JavaScript` 中数据类型的起源。
-
 {% hint style="info" %}
 细心的话，你可能会发现，原型对象也有自己的 **proto** ，这也不奇怪，毕竟万物皆对象嘛。原型对象的 **proto** 指向的是 Object.prototype。那么 Object.prototype.**proto** 存不存在呢？其实是不存在的，打印的话会发现是 null 。这也证明了 Object 是 JavaScript 中数据类型的起源。
 {% endhint %}
