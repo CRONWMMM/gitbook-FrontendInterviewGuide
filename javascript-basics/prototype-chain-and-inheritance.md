@@ -40,6 +40,10 @@ const person = new Person();
 
 > 细心的话，你可能会发现，原型对象也有自己的 `__proto__` ，这也不奇怪，毕竟万物皆对象嘛。原型对象的 \_\_proto\_\_ 指向的是 `Object.prototype`。那么 `Object.prototype.__proto__` 存不存在呢？其实是不存在的，打印的话会发现是 `null` 。这也证明了 `Object` 是 `JavaScript` 中数据类型的起源。
 
+{% hint style="info" %}
+细心的话，你可能会发现，原型对象也有自己的 **proto** ，这也不奇怪，毕竟万物皆对象嘛。原型对象的 **proto** 指向的是 Object.prototype。那么 Object.prototype.**proto** 存不存在呢？其实是不存在的，打印的话会发现是 null 。这也证明了 Object 是 JavaScript 中数据类型的起源。
+{% endhint %}
+
 分析到这里，我们大概了解原型及构造函数的大概关系了，我们可以用一张图来表示这个关系：
 
 ![](../.gitbook/assets/prototypechain.png)
@@ -99,7 +103,9 @@ const person = new Person();
 
 ### 原型污染
 
-> 原型污染是指：攻击者通过某种手段修改 JavaScript 对象的原型。
+{% hint style="info" %}
+原型污染是指：攻击者通过某种手段修改 JavaScript 对象的原型。
+{% endhint %}
 
 什么意思呢，原理其实很简单。如果我们把 `Object.prototype.toString` 改成这样：
 
@@ -211,11 +217,15 @@ console.log(`Running on http://${HOST}:${PORT}`);
 
 终于可以来说说继承了，先来看看继承的概念，看下百度上是怎么说的：
 
-> **继承**是[面向对象](https://baike.baidu.com/item/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/2262089)软件技术当中的一个概念，与[多态](https://baike.baidu.com/item/%E5%A4%9A%E6%80%81/2282489)、[封装](https://baike.baidu.com/item/%E5%B0%81%E8%A3%85/2796965)共为[面向对象](https://baike.baidu.com/item/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/2262089)的三个基本特征。继承可以使得子类具有父类的[属性](https://baike.baidu.com/item/%E5%B1%9E%E6%80%A7/20192958)和[方法](https://baike.baidu.com/item/%E6%96%B9%E6%B3%95/3009352)或者重新定义、追加属性和方法等。
+{% hint style="info" %}
+**继承**是[面向对象](https://baike.baidu.com/item/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/2262089)软件技术当中的一个概念，与[多态](https://baike.baidu.com/item/%E5%A4%9A%E6%80%81/2282489)、[封装](https://baike.baidu.com/item/%E5%B0%81%E8%A3%85/2796965)共为[面向对象](https://baike.baidu.com/item/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/2262089)的三个基本特征。继承可以使得子类具有父类的[属性](https://baike.baidu.com/item/%E5%B1%9E%E6%80%A7/20192958)和[方法](https://baike.baidu.com/item/%E6%96%B9%E6%B3%95/3009352)或者重新定义、追加属性和方法等。
+{% endhint %}
 
 这段对于程序员来说，这个解释还是比较好理解的。接着往下翻，我看到了一条重要的描述：
 
-> 子类的创建可以增加新数据、新功能，可以继承父类全部的功能，但是不能选择性的继承父类的部分功能。**继承是类与类之间的关系，不是对象与对象之间的关系。**
+{% hint style="info" %}
+子类的创建可以增加新数据、新功能，可以继承父类全部的功能，但是不能选择性的继承父类的部分功能。**继承是类与类之间的关系，不是对象与对象之间的关系。**
+{% endhint %}
 
 这就尴尬了，`JavaScript` 里哪里来的类，只有对象。那照这么说岂不是不能实现纯正的继承了？所以才会有开头那句话：**与其叫继承，委托的说法反而更准确些。**
 
@@ -253,7 +263,9 @@ person.sayAge.apply(man); // => 23
 
 ### 原型链继承
 
-> 原型链继承，就是让对象实例通过原型链的方式串联起来，当访问目标对象的某一属性时，能顺着原型链进行查找，从而达到类似继承的效果。
+{% hint style="info" %}
+原型链继承，就是让对象实例通过原型链的方式串联起来，当访问目标对象的某一属性时，能顺着原型链进行查找，从而达到类似继承的效果。
+{% endhint %}
 
 ```javascript
 // 父类
