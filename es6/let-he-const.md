@@ -122,9 +122,9 @@ result.forEach(function (item) {
 
 从上面的代码我们就可以看出，`let` 创建作用域的方式，其实就是创建了一个函数，在函数内定义一个同名变量并于外部将这个变量传入其中，达到目的。
 
-#### 变量声明提升及暂时性死区
+#### 变量声明提升
 
-* `let` 定义的变量不会进行变量声明提升操作，这一特性也被成为暂时性死区。
+* `let` 定义的变量不会进行变量声明提升操作。
 * `var` 定义的变量存在变量声明提升，因此在变量定义前就能访问到变量。
 
 ```javascript
@@ -149,8 +149,35 @@ var b = 2;
 
 看起来好像 `Babel` 无法编译这种阻止变量声明提升的语法，暂时性死区的特性应该是浏览器内部的 JS 执行引擎支持和实现的。
 
+#### 暂时性死区
+
+{% hint style="info" %}
+只要块级作用域内存在`let`命令，它所声明的变量就“绑定”（binding）这个区域，不再受外部的影响，这种特性被成为暂时性死区。
+{% endhint %}
+
+```javascript
+var tmp = 123;
+
+if (true) {
+  tmp = 'abc'; // ReferenceError: tmp is not defined
+  let tmp;
+}
+```
+
+同样，这个特性也是被浏览器内部的 JS 执行引擎支持和实现的，`babel` 无法支持这种特性的编译，只能简单的将 `let` 编译成 `var`。
+
 #### 可否重复定义
 
 * `let` 定义的变量，一旦定义便不允许被重新定义。
 * `var` 定义的变量，可以被重新定义。
+
+```javascript
+var a = 1;
+var a = 2;
+
+let b = 3;
+let b = 4; // Uncaught SyntaxError: Identifier 'b' has already been declared
+```
+
+这段代码就不用看编译后的效果了，因为如果对 `let` 定义的变量再次重新定义，是在 `babel` 编译阶段就会报错了，不会生成任何内容。
 
