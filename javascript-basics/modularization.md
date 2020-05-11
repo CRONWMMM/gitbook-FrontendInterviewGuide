@@ -33,11 +33,17 @@ description: >-
 
 ### AMD 、CMD 和 UMD
 
-> [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) 是"Asynchronous Module Definition"的缩写，意思就是"异步模块定义" ，它采用异步方式加载模块，模块的加载不影响它后面语句的运行。所有依赖这个模块的语句，都定义在一个回调函数中，等到所有依赖项都加载完成之后，这个回调函数才会运行。
+{% hint style="info" %}
+[AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) 是"Asynchronous Module Definition"的缩写，意思就是"异步模块定义" ，它采用异步方式加载模块，模块的加载不影响它后面语句的运行。所有依赖这个模块的语句，都定义在一个回调函数中，等到所有依赖项都加载完成之后，这个回调函数才会运行。
+{% endhint %}
 
-> [CMD](https://github.com/seajs/seajs/issues/242) 是"Common Module Definition"的缩写，意思就是"公共模块定义"。CMD 可以使用 require 同步加载依赖，也可以使用 require.async 来异步加载依赖。
+{% hint style="info" %}
+ [CMD](https://github.com/seajs/seajs/issues/242) 是"Common Module Definition"的缩写，意思就是"公共模块定义"。CMD 可以使用 require 同步加载依赖，也可以使用 require.async 来异步加载依赖。
+{% endhint %}
 
-> AMD 和 CMD 都是非官方的两种 js 模块化规范，AMD 标准的代表框架是 RequireJS ，CMD 标准的代表框架是 SeaJS。
+{% hint style="info" %}
+AMD 和 CMD 都是非官方的两种 js 模块化规范，AMD 标准的代表框架是 RequireJS ，CMD 标准的代表框架是 SeaJS。
+{% endhint %}
 
 ```javascript
 // AMD
@@ -95,7 +101,9 @@ define(function(require, exports, module) {
 
 ### CommonJS 实现模块化
 
-> `CommonJS` 是的 NodeJS 所使用的一种服务端的模块化规范，它将每一个文件定义为一个 `module` ，模块必须通过 `module.exports` 导出对外的变量或接口，通过 `require()` 来导入其他模块的输出到当前模块作用域中
+{% hint style="info" %}
+ `CommonJS` 是的 NodeJS 所使用的一种服务端的模块化规范，它将每一个文件定义为一个 `module` ，模块必须通过 `module.exports` 导出对外的变量或接口，通过 `require()` 来导入其他模块的输出到当前模块作用域中。
+{% endhint %}
 
 使用方式一：
 
@@ -239,11 +247,15 @@ console.log(func());
    }
    ```
 
-   > **注意：**虽然 Node 原生提供了 `exports` 作为 `module.exports` 的简化写法，但是不能手动改变 `exports` 的赋值，比如这样：`exports = {}`，这样写就代表将 `module.exports` 的引用从 `exports` 上切断了。这就意味着：如果一个模块的对外接口是一个单一的值（例如：数字、函数、字符串），就不能使用 `exports` 只能使用 `module.exports` 输出 。
+{% hint style="warning" %}
+ **注意：**虽然 Node 原生提供了 `exports` 作为 `module.exports` 的简化写法，但是不能手动改变 `exports` 的赋值，比如这样：`exports = {}`，这样写就代表将 `module.exports` 的引用从 `exports` 上切断了。这就意味着：如果一个模块的对外接口是一个单一的值（例如：数字、函数、字符串），就不能使用 `exports` 只能使用 `module.exports` 输出 。
+{% endhint %}
 
 #### 关于 require
 
-> `CommonJS` 中 `require` 的基本功能，是读入并执行一个 JavaScript 文件，然后返回该模块的 `exports` 对象，如果没有发现指定模块则报错。
+{% hint style="info" %}
+`CommonJS` 中 `require` 的基本功能，是读入并执行一个 JavaScript 文件，然后返回该模块的 `exports` 对象，如果没有发现指定模块则报错。
+{% endhint %}
 
 * require 加载文件时，默认后缀为 `.js` 后缀。
 * 如果 `require` 中的路径字符串参数以 `'/'` 开头，则会按照这个绝对路径查找文件。
@@ -259,7 +271,9 @@ console.log(func());
 
 ### ESModule 实现的模块化
 
-> `ESModule` 是 ES6 提供的官方 js 模块化方案。目前浏览器还不能全面支持 `ESModule` 的语法，需要用 babel 进行解析。
+{% hint style="info" %}
+`ESModule` 是 ES6 提供的官方 js 模块化方案。目前浏览器还不能全面支持 `ESModule` 的语法，需要用 babel 进行解析。
+{% endhint %}
 
 #### ESModule  常用语法
 
