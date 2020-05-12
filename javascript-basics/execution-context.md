@@ -15,5 +15,11 @@ description: >-
 
 ### 执行上下文的类型
 
-简而言之，执行上下文是评估和执行 `JavaScript` 代码的环境的抽象概念。每当 `Javascript` 代码在运行的时候，它都是在执行上下文中运行
+简而言之，执行上下文是评估和执行 `JavaScript` 代码的环境的抽象概念。每当 `Javascript` 代码在运行的时候，它都是在执行上下文中运行。
+
+### 相关参考
+
+* [JavaScript 深入之执行上下文](https://github.com/mqyqingfeng/Blog)
+* [\[译\] 理解 JavaScript 中的执行上下文和执行栈](https://juejin.im/post/5ba32171f265da0ab719a6d7#heading-1)
+* [知乎：JS中的作用域链是在什么时候建立的？](https://www.zhihu.com/question/36751764)
 
