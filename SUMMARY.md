@@ -15,8 +15,8 @@
 ## ES6
 
 * [babel](es6/babel.md)
-* [搭建 babel 编译环境](es6/da-jian-babel-bian-yi-huan-jing.md)
-* [let 和 const](es6/let-he-const.md)
+* [搭建 babel 编译环境](es6/build-babel-compiling-environment.md)
+* [let 和 const](es6/let-and-const.md)
 
 ## 前端框架 <a id="frontend-frame"></a>
 

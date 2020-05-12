@@ -54,6 +54,19 @@ b = (_readOnlyError("b"), 3);
 `b = (_readOnlyError("b"), 3)`这种操作我也没见过，不过猜测应该类似于 `b = _readOnlyError("b") && 3`
 {% endhint %}
 
+{% hint style="warning" %}
+**注意：**由于`const` 定义的值是不可变的，这点在用 `const` 定义引用类型的时候要特别注意！如果是引用类型的 `const` 值，改变其中的属性是可行的，但是通常不建议这么做。
+{% endhint %}
+
+```javascript
+const obj = {};
+obj.a = 1;
+obj.b = 2;
+obj; // => {a: 1, b: 2}
+
+obj = {}; // => 报错
+```
+
 #### 定义就要初始化
 
 由于 `const` 定义的常量，定义后就不能修改的特性，决定了它定义的时候必须就初始化，否则就报错；而 `let` 则没有这种限制，它定义的变量完全可以在后面再初始化：
