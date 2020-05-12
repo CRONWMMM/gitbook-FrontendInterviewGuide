@@ -23,7 +23,7 @@ description: >-
 
 ### 相关参考
 
-* [JavaScript 深入之执行上下文](https://github.com/mqyqingfeng/Blog)
+* [JavaScript 深入之执行上下文](https://github.com/mqyqingfeng/Blog/issues/4)
 * [\[译\] 理解 JavaScript 中的执行上下文和执行栈](https://juejin.im/post/5ba32171f265da0ab719a6d7#heading-1)
 * [知乎：JS中的作用域链是在什么时候建立的？](https://www.zhihu.com/question/36751764)
 
