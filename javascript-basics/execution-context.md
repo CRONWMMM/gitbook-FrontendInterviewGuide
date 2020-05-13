@@ -39,7 +39,7 @@ description: >-
 
 > 原文：Every execution context has associated with it a variable object. Variables and functions declared in the source text are added as properties of the variable object. For function code, parameters are added as properties of the variable object.
 
-函数的执行分为预**编译阶段**和**执行阶段**，在预编译阶段时，会用当前函数的**参数列表**（`arguments`）初始化一个 “变量对象” 并将当前执行上下文与之关联 ，函数代码块中声明的 **变量** 和 **函数** 将作为属性添加到这个变量对象上。
+执行上下文的生命周期包括了**创建阶段**和**执行阶段**，在创建阶段时，会用当前函数的**参数列表**（`arguments`）初始化一个 “变量对象” 并将当前执行上下文与之关联 ，函数代码块中声明的 **变量** 和 **函数** 将作为属性添加到这个变量对象上。
 
 ![&#x53D8;&#x91CF;&#x5BF9;&#x8C61;&#x7684;&#x521B;&#x5EFA;&#x7EC6;&#x8282;](../.gitbook/assets/outfunvo.jpg)
 
@@ -118,6 +118,23 @@ executionContext：{
 
 #### 创建阶段
 
+执行上下文的创建阶段，发生在函数调用时且在执行函数体内的具体代码之前，在创建阶段，JS 引擎会做如下操作：
+
+* 用当前函数的**参数列表**（`arguments`）初始化一个 “变量对象” 并将当前执行上下文与之关联 ，函数代码块中声明的 **变量** 和 **函数** 将作为属性添加到这个变量对象上。**在这一阶段，如果发现变量和函数名称重复，则以函数为准，变量统一定义为 `undefined` 需要等到赋值时才会有确值，函数则直接定义**。
+
+
+
+  > 有没有发现这段加粗的描述非常熟悉？没错，这个操作就是变量声明提升（变量和函数声明都会提升，但是函数提升更靠前）。
+
+* 构建作用域链（前面已经说过构建细节）
+* 确定 `this` 的值
+
+#### 执行阶段
+
+* 变量复制
+* 函数引用
+* 逐行执行代码
+
 ### 执行上下文栈
 
 当一段脚本运行起来的时候，可能会调用很多函数并产生很多函数执行上下文，那么问题来了，这些执行上下文该怎么管理呢？为了解决这个问题，`javascript` 引擎就创建了 “执行上下文栈” （`Execution context stack` 简称 `ECS`）来管理执行上下文。
@@ -130,12 +147,15 @@ executionContext：{
 
 ### 栈溢出
 
+### 尾递归优化
+
 ### 相关参考
 
 * [JavaScript 深入之执行上下文](https://github.com/mqyqingfeng/Blog/issues/4)
 * [JavaScript深入之变量对象](https://github.com/mqyqingfeng/Blog/issues/5)
 * \*\*\*\*[图解Javascript——变量对象和活动对象](https://www.cnblogs.com/ivehd/p/vo_ao.html)
 * [\[译\] 理解 JavaScript 中的执行上下文和执行栈](https://juejin.im/post/5ba32171f265da0ab719a6d7#heading-1)
+* [理解Javascript之执行上下文\(Execution Context**\)**](https://www.cnblogs.com/MinLee/p/5862271.html)\*\*\*\*
 * [知乎：JS中的作用域链是在什么时候建立的？](https://www.zhihu.com/question/36751764)
 * [VO、AO、执行环境和作用域链](https://www.cnblogs.com/lulin1/p/9712311.html)
 
