@@ -54,14 +54,20 @@ var b = function _b () {}
 全局执行上下文和函数执行上下文中的变量对象还略有不同，它们之间的差别简单来说：
 
 1. **全局上下文中的变量对象就是全局对象**，以浏览器环境来说，就是 `window` 对象。
-2. **函数执行上下文中的变量对象，其实是不能被直接访问的**，只有当函数被调用时，变量对象（VO）被激活为活动对象（AO）时，我们才能访问到其中的属性和方法。
+2. **函数执行上下文中的变量对象内部定义的属性，是不能被直接访问的**，只有当函数被调用时，变量对象（VO）被激活为活动对象（AO）时，我们才能访问到其中的属性和方法。
 {% endhint %}
 
 #### 活动对象（`activation object` 简称 `AO`）
 
 > 原文：When control enters an execution context for function code, an object called the activation object is created and associated with the execution context. The activation object is initialised with a property with name arguments and attributes { DontDelete }. The initial value of this property is the arguments object described below. The activation object is then used as the variable object for the purposes of variable instantiation.
 
-#### 作用域链
+函数进入执行阶段时，原本不能访问的变量对象被激活，由特殊对象 **arguments** 初始化，成为一个活动对象，自此，我们可以访问到其中的各种属性。
+
+{% hint style="info" %}
+其实变量对象和活动对象是一个东西，只不过处于不同的状态和阶段而已。
+{% endhint %}
+
+#### 作用域链（`scope chain`）
 
 #### 当前可执行代码块的调用者
 
@@ -69,7 +75,11 @@ var b = function _b () {}
 
 ```javascript
 executionContext：{
-    variable object：vars,functions,arguments,
+    [variable object | activation object]：{
+        arguments,
+        variables,
+        funcions
+    },
     scope chain: variable object + all parents scopes
     thisValue: context object
 }
