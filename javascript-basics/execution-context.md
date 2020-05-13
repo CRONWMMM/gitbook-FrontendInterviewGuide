@@ -34,7 +34,7 @@ description: >-
 
 > 原文：Every execution context has associated with it a variable object. Variables and functions declared in the source text are added as properties of the variable object. For function code, parameters are added as properties of the variable object.
 
-翻译下来的大概意思就是每个执行环境都会关联一个 “变量对象” ，函数代码块中声明的 **变量** 和 **函数** 将作为变量对象的属性添加到这个变量对象上，并且该函数代码块的**参数列表**会作为一个名为 `arguments` 的属性被单独添加到变量对象上。这个上下文保存了当前作用域的所有函数和变量。
+函数的执行分为预**编译阶段**和**执行阶段**，在预编译阶段时，会用当前函数的**参数列表**（`arguments`）初始化一个 “变量对象” 并将当前执行上下文与之关联 ，函数代码块中声明的 **变量** 和 **函数** 将作为属性添加到这个变量对象上。
 
 ![&#x53D8;&#x91CF;&#x5BF9;&#x8C61;&#x7684;&#x521B;&#x5EFA;&#x7EC6;&#x8282;](../.gitbook/assets/outfunvo.jpg)
 
@@ -61,7 +61,7 @@ var b = function _b () {}
 
 > 原文：When control enters an execution context for function code, an object called the activation object is created and associated with the execution context. The activation object is initialised with a property with name arguments and attributes { DontDelete }. The initial value of this property is the arguments object described below. The activation object is then used as the variable object for the purposes of variable instantiation.
 
-函数进入执行阶段时，原本不能访问的变量对象被激活，由特殊对象 **arguments** 初始化，成为一个活动对象，自此，我们可以访问到其中的各种属性。
+函数进入执行阶段时，原本不能访问的变量对象被激活成为一个活动对象，自此，我们可以访问到其中的各种属性。
 
 {% hint style="info" %}
 其实变量对象和活动对象是一个东西，只不过处于不同的状态和阶段而已。
@@ -69,16 +69,30 @@ var b = function _b () {}
 
 #### 作用域链（`scope chain`）
 
-#### 当前可执行代码块的调用者
+{% hint style="info" %}
+**作用域** 规定了如何查找变量，也就是确定当前执行代码对变量的访问权限。当查找变量的时候，会先从当前上下文的变量对象中查找，如果没有找到，就会从父级（词法层面上的父级）执行上下文的变量对象中查找，一直找到全局上下文的变量对象，也就是全局对象。这样由多个执行上下文的变量对象构成的链表就叫做 **作用域链**。
+{% endhint %}
 
-如果将一个执行上下文使用代码形式表现出来的话，应该类似于下面这种：
+函数的作用域在函数创建时就已经确定了，当函数创建时，会有一个名为 `[[scope]]` 的内部属性保存所有父变量对象到其中。当函数执行时，激活生成 AO 就会将当前执行上下文中的活动对象添加到作用域链的前端，完整作用域链创建完成：
+
+```javascript
+Scope = [AO].concat([[Scope]]);
+```
+
+#### 当前可执行代码块的调用者（this）
+
+如果当前函数被作为对象属性调用或使用 `bind` `call` `apply` 等 `API` 进行委托调用，则将当前代码块的调用者信息（`this value`）存入当前执行上下文，否则默认为全局对象调用。
+
+
+
+如果将一个完整的执行上下文使用代码形式表现出来的话，应该类似于下面这种：
 
 ```javascript
 executionContext：{
     [variable object | activation object]：{
         arguments,
-        variables,
-        funcions
+        variables: [...],
+        funcions: [...]
     },
     scope chain: variable object + all parents scopes
     thisValue: context object
