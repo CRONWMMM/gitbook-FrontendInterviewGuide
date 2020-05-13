@@ -17,7 +17,14 @@ description: >-
 
 执行上下文为我们的可执行代码块提供了执行前的必要准备工作，可以抽象的理解为一个 `object` ，一个执行上下文里包括以下内容：
 
-1. 变量对象
+1. **变量对象**
+
+   > 原文：Every execution context has associated with it a variable object. Variables and functions declared in the source text are added as properties of the variable object. For function code, parameters are added as properties of the variable object.
+
+   翻译下来就是每个执行环境都会关联一个 “变量对象” ，函数代码块中声明的**变量**和**函数**将作为变量对象的属性添加到这个变量对象上，并且该函数代码块的形参会作为一个名为 `arguments` 的属性被单独添加到变量对象上。
+
+   > 这边有一点需要注意，只有**函数声明**（`function declaration`）会被加入到变量对象中，而**函数表达式**（`function expression`）会被忽略
+
 2. 作用域链
 3. 当前可执行代码块的调用者
 
