@@ -21,9 +21,20 @@ description: >-
 
    > 原文：Every execution context has associated with it a variable object. Variables and functions declared in the source text are added as properties of the variable object. For function code, parameters are added as properties of the variable object.
 
-   翻译下来就是每个执行环境都会关联一个 “变量对象” ，函数代码块中声明的**变量**和**函数**将作为变量对象的属性添加到这个变量对象上，并且该函数代码块的形参会作为一个名为 `arguments` 的属性被单独添加到变量对象上。
+   翻译下来就是每个执行环境都会关联一个 “变量对象” ，函数代码块中声明的 **变量** 和 **函数** 将作为变量对象的属性添加到这个变量对象上，并且该函数代码块的形参会作为一个名为 `arguments` 的属性被单独添加到变量对象上。
 
-   > 这边有一点需要注意，只有**函数声明**（`function declaration`）会被加入到变量对象中，而**函数表达式**（`function expression`）会被忽略
+
+
+   > 这边有一点需要注意，只有**函数声明**（`function declaration`）会被加入到变量对象中，而**函数表达式**（`function expression`）会被忽略。
+
+   ```javascript
+   // 这种叫做函数声明，会被加入变量对象
+   function a () {}
+
+   // b 是变量声明，也会被加入变量对象，但是作为一个函数表达式
+   // _b 不会被加入变量对象
+   var b = function _b () {}
+   ```
 
 2. 作用域链
 3. 当前可执行代码块的调用者
