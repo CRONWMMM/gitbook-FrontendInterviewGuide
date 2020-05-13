@@ -62,7 +62,7 @@ const person = new Person();
 
 我们可以打印出来看一下：
 
-![](../.gitbook/assets/image%20%281%29.png)
+![](../.gitbook/assets/image%20%285%29.png)
 
 现在才想起来所有的函数可以使用 `new Function()` 的方式创建，那么这个答案也就很自然了，有点意思，再来试试别的构造函数。
 
