@@ -30,6 +30,11 @@ description: >-
 
 执行上下文是一个抽象的概念，我们可以将它理解为一个 `object` ，一个执行上下文里包括以下内容：
 
+1. 变量对象
+2. 活动对象
+3. 作用域链
+4. 调用者信息
+
 #### 变量对象（`variable object` 简称 `VO`）
 
 > 原文：Every execution context has associated with it a variable object. Variables and functions declared in the source text are added as properties of the variable object. For function code, parameters are added as properties of the variable object.
@@ -81,9 +86,13 @@ Scope = [AO].concat([[Scope]]);
 
 #### 当前可执行代码块的调用者（this）
 
-如果当前函数被作为对象属性调用或使用 `bind` `call` `apply` 等 `API` 进行委托调用，则将当前代码块的调用者信息（`this value`）存入当前执行上下文，否则默认为全局对象调用。
+如果当前函数被作为对象方法调用或使用 `bind` `call` `apply` 等 `API` 进行委托调用，则将当前代码块的调用者信息（`this value`）存入当前执行上下文，否则默认为全局对象调用。
 
+{% hint style="info" %}
+关于 this 的创建细节，有点烦，有兴趣的话可以进入 [传送门](https://github.com/mqyqingfeng/Blog/issues/7) 学习。
+{% endhint %}
 
+#### 执行上下文数据结构模拟
 
 如果将一个完整的执行上下文使用代码形式表现出来的话，应该类似于下面这种：
 
