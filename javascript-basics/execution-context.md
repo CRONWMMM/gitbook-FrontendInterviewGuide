@@ -34,7 +34,7 @@ description: >-
 
 > 原文：Every execution context has associated with it a variable object. Variables and functions declared in the source text are added as properties of the variable object. For function code, parameters are added as properties of the variable object.
 
-翻译下来就是每个执行环境都会关联一个 “变量对象” ，函数代码块中声明的 **变量** 和 **函数** 将作为变量对象的属性添加到这个变量对象上，并且该函数代码块的**形参**会作为一个名为 `arguments` 的属性被单独添加到变量对象上。其实这个变量对象，也可以被称为：当前执行上下文的 **作用域**。
+翻译下来的大概意思就是每个执行环境都会关联一个 “变量对象” ，函数代码块中声明的 **变量** 和 **函数** 将作为变量对象的属性添加到这个变量对象上，并且该函数代码块的**参数列表**会作为一个名为 `arguments` 的属性被单独添加到变量对象上。这个上下文保存了当前作用域的所有函数和变量。
 
 ![&#x53D8;&#x91CF;&#x5BF9;&#x8C61;&#x7684;&#x521B;&#x5EFA;&#x7EC6;&#x8282;](../.gitbook/assets/outfunvo.jpg)
 
