@@ -147,7 +147,29 @@ executionContext：{
 
 每当引擎发现一处函数调用，就会创建一个新的**函数执行上下文**压入栈内，并将控制权交给该上下文，待函数执行完成后，即将该执行上下文从栈内弹出销毁，将控制权重新给到栈内上一个执行上下文。
 
+![](../.gitbook/assets/executioncontextstack.gif)
+
 ### 递归和栈溢出
+
+在了解了调用栈的运行机制后，我们可以考虑一个问题，这个执行上下文栈可以被无限压栈吗？很显然是不行的，执行栈本身也是有容量限制的，当执行栈内部的执行上下文对象积压到一定程度如果继续积压，就会报 “栈溢出（`stack overflow`）” 的错误。栈溢出错误经常会发生在 **递归** 中。
+
+![&#x6808;&#x6EA2;&#x51FA;&#x9519;&#x8BEF;](../.gitbook/assets/stackoverflowerror.jpg)
+
+{% hint style="info" %}
+程序调用自身的编程技巧称为递归（ recursion）。
+{% endhint %}
+
+递归的使用场景，通常是在运行次数未知的情况下，程序会设定一个限定条件，除非达到该限定条件否则程序将一直调用自身运行下去。递归的适用场景非常广泛，比如累加函数：
+
+```javascript
+// 求 1~num 的累加，此时 num 由外部传入，是未知的
+function recursion (num, sum = 0) {
+    if (num === 0) return sum;
+    return recursion(num - 1, sum + num);
+}
+
+recursion(100) // => 5050
+```
 
 ### 尾递归优化
 
