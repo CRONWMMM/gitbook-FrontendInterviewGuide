@@ -246,6 +246,75 @@ recursion(100000) // => Uncaught RangeError: Maximum call stack size exceeded
 
 总之，尾递归优化这个东西暂时还是不要想用到了，不过先了解个概念也是好的。
 
+### 小试牛刀
+
+在网上找了几条执行上下文比较典型的面试题，大家可以试一试：
+
+**第一题：**
+
+```javascript
+var foo = function () {
+    console.log('foo1');
+}
+
+foo();  // foo1
+
+var foo = function () {
+    console.log('foo2');
+}
+
+foo(); // foo2
+```
+
+第一题没什么，应该能写出来。
+
+**第二题：**
+
+```javascript
+foo();  // foo2
+
+var foo = function foo() {
+    console.log('foo1');
+}
+
+function foo() {
+    console.log('foo2');
+}
+
+foo(); // foo1
+```
+
+全局执行环境自动创建，过程中生成了变量对象进行函数变量的属性收集，造成了函数声明提升、变量声明提升。由于函数声明提升更加靠前，且如果 `var` 定义变量的时候发现已有同名函数定义则跳过变量定义，上面的代码其实可以写成下面这样：
+
+```javascript
+function foo () {
+    console.log('foo2');
+}
+
+foo();  // foo2
+
+foo = function foo() {
+    console.log('foo1');
+};
+
+foo();  // foo1
+```
+
+**第三题：**
+
+```javascript
+var foo = 1;
+function bar () {
+    console.log(foo); // undefined
+    if (!foo) var foo = 10;
+    console.log(foo); // 10
+}
+
+bar();
+```
+
+`bar` 函数运行，内部变量申明提升，当执行代码块中有访问变量时，**先查找本地作用域**，找到了 `foo` 为 `undefined` ，打印出来。然后走到 `if` 逻辑里 `foo` 被赋值为 `10` ，打印出 `10`。
+
 ### 相关参考
 
 * [JavaScript 深入之执行上下文](https://github.com/mqyqingfeng/Blog/issues/4)
