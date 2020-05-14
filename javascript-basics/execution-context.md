@@ -135,7 +135,28 @@ executionContext：{
 
 #### 销毁阶段
 
-当函数执行完成后，当前执行上下文被弹出执行上下文栈销毁，控制权被重新交给执行栈上一层的执行上下文。
+一般来讲当函数执行完成后，当前执行上下文（局部环境）会被弹出执行上下文栈并且销毁，控制权被重新交给执行栈上一层的执行上下文。
+
+{% hint style="warning" %}
+注意这只是一般情况，闭包的情况又有所不同。
+{% endhint %}
+
+闭包的定义：**有权访问另一个函数内部变量的函数。**简单说来，如果一个函数被作为另一个函数的返回值，并在外部被引用，那么这个函数就被称为闭包。
+
+```javascript
+function funcFactory () {
+    var a = 1;
+    return function () {
+        alert(a);
+    }
+}
+
+// 闭包
+var sayA = funcFactory();
+sayA();
+```
+
+当闭包的父包裹函数执行完成后，父函数本身执行环境的作用域链会被销毁，但是由于闭包的作用域链仍然在引用父函数的变量对象，导致了父函数的变量对象会一直驻存于内存，无法销毁，除非闭包的引用被销毁，闭包不再引用父函数的变量对象，这块内存才能被释放掉。过度使用闭包会造成 **内存泄露** 的问题，这块等到闭包章节再做详细分析。
 
 ### 执行上下文栈
 
@@ -156,22 +177,59 @@ executionContext：{
 ![&#x6808;&#x6EA2;&#x51FA;&#x9519;&#x8BEF;](../.gitbook/assets/stackoverflowerror.jpg)
 
 {% hint style="info" %}
-程序调用自身的编程技巧称为递归（ recursion）。
+程序调用自身的编程技巧称为**递归（ `recursion`）**。
 {% endhint %}
 
 递归的使用场景，通常是在运行次数未知的情况下，程序会设定一个限定条件，除非达到该限定条件否则程序将一直调用自身运行下去。递归的适用场景非常广泛，比如累加函数：
 
 ```javascript
 // 求 1~num 的累加，此时 num 由外部传入，是未知的
+function recursion (num) {
+    if (num === 0) return num;
+    return recursion(num - 1) + num;
+}
+
+recursion(100) // => 5050
+recursion(1000) // => 500500
+recursion(10000) // => 50005000
+recursion(100000) // => Uncaught RangeError: Maximum call stack size exceeded
+```
+
+从代码中可以看到，这个递归的累加函数，在计算 1 ~ 100000 的累加和的时候，执行栈就崩不住了，触发了栈溢出的错误。
+
+### 尾递归优化
+
+针对递归存在的 “爆栈” 问题，我们可以学习一下 **尾递归优化**。递归我们已经了解了，那么 “尾” 是什么意思呢？“尾” 的意思是 “尾调用（`Tail Call`）”，即**函数的最后一步是返回一个函数的运行结果：**
+
+```javascript
+// 尾调用正确示范1
+function a(x){
+  return b(x);
+}
+
+// 尾调用正确示范2
+// 尾调用不一定要写在函数的最后为止，只要保证执行时是最后一部操作就行了。
+function c(x) {
+  if (x > 0) {
+    return d(x);
+  }
+  return e(x);
+}
+```
+
+尾调用之所以与其他调用不同，就在于它的特殊的调用位置。尾调用由于是函数的最后一步操作，所以不需要保留外层函数的相关信息，因为调用位置、内部变量等信息都不会再用到了，只要直接用内层函数的调用记录，取代外层函数的调用记录就可以了。
+
+我们可以使用尾调用的方式改写下上面的累加递归：
+
+```javascript
+// 尾递归优化
 function recursion (num, sum = 0) {
     if (num === 0) return sum;
     return recursion(num - 1, sum + num);
 }
 
-recursion(100) // => 5050
+recursion(100000) // => 5050
 ```
-
-### 尾递归优化
 
 ### 相关参考
 
@@ -182,4 +240,6 @@ recursion(100) // => 5050
 * [理解Javascript之执行上下文\(Execution Context**\)**](https://www.cnblogs.com/MinLee/p/5862271.html)\*\*\*\*
 * [知乎：JS中的作用域链是在什么时候建立的？](https://www.zhihu.com/question/36751764)
 * [VO、AO、执行环境和作用域链](https://www.cnblogs.com/lulin1/p/9712311.html)
+* [尾调用优化](http://www.ruanyifeng.com/blog/2015/04/tail-call.html)
+* [JavaScript调用栈、尾递归和手动优化](https://www.jianshu.com/p/3182429e26b5)
 
