@@ -306,14 +306,40 @@ foo();  // foo1
 var foo = 1;
 function bar () {
     console.log(foo); // undefined
-    if (!foo) var foo = 10;
+    var foo = 10;
     console.log(foo); // 10
 }
 
 bar();
 ```
 
-`bar` 函数运行，内部变量申明提升，当执行代码块中有访问变量时，**先查找本地作用域**，找到了 `foo` 为 `undefined` ，打印出来。然后走到 `if` 逻辑里 `foo` 被赋值为 `10` ，打印出 `10`。
+`bar` 函数运行，内部变量申明提升，当执行代码块中有访问变量时，**先查找本地作用域**，找到了 `foo` 为 `undefined` ，打印出来。然后 `foo` 被赋值为 `10` ，打印出 `10`。
+
+**第四题：**
+
+```javascript
+var foo = 1;
+function bar () {
+    console.log(foo);
+    foo = 2;
+}
+bar();  // => 1
+console.log(foo); // => 2
+```
+
+这题也是考察的作用域链查找，`bar` 里操作的 `foo` 其实是上层作用域的变量。
+
+**第五题：**
+
+```javascript
+var foo = 1;
+function bar (foo) {
+    console.log(foo);
+    foo = 234;
+}
+bar(123);  // => 123
+console.log(foo); // => 1
+```
 
 ### 相关参考
 
