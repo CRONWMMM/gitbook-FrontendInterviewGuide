@@ -235,7 +235,7 @@ recursion(100000) // => Uncaught RangeError: Maximum call stack size exceeded
 
 运行之后怎么还是报错了 😳 ？？裂开了呀。。。  
 
-其实，尾递归优化这种东西，现在没有任何一个浏览器是支持的，`babel` 编译也不支持。那 `nodejs` 里的 `V8` 引擎呢？它做好了，但是不给你用，官方回答如下：
+其实，尾递归优化这种东西，~~现在没有任何一个浏览器是支持的~~（据说 Safari 13 是支持的），`babel` 编译也不支持。那 `nodejs` 里的 `V8` 引擎呢？它做好了，但是不给你用，官方回答如下：
 
 > Proper tail calls have been implemented but not yet shipped given that a change to the feature is currently under discussion at TC39.
 
@@ -257,13 +257,13 @@ var foo = function () {
     console.log('foo1');
 }
 
-foo();  // foo1
+foo();
 
 var foo = function () {
     console.log('foo2');
 }
 
-foo(); // foo2
+foo();
 ```
 
 第一题没什么，应该能写出来。
@@ -271,7 +271,7 @@ foo(); // foo2
 **第二题：**
 
 ```javascript
-foo();  // foo2
+foo();
 
 var foo = function foo() {
     console.log('foo1');
@@ -281,7 +281,7 @@ function foo() {
     console.log('foo2');
 }
 
-foo(); // foo1
+foo();
 ```
 
 全局执行环境自动创建，过程中生成了变量对象进行函数变量的属性收集，造成了函数声明提升、变量声明提升。由于函数声明提升更加靠前，且如果 `var` 定义变量的时候发现已有同名函数定义则跳过变量定义，上面的代码其实可以写成下面这样：
@@ -291,13 +291,13 @@ function foo () {
     console.log('foo2');
 }
 
-foo();  // foo2
+foo();
 
 foo = function foo() {
     console.log('foo1');
 };
 
-foo();  // foo1
+foo();
 ```
 
 **第三题：**
@@ -305,9 +305,9 @@ foo();  // foo1
 ```javascript
 var foo = 1;
 function bar () {
-    console.log(foo); // undefined
+    console.log(foo);
     var foo = 10;
-    console.log(foo); // 10
+    console.log(foo);
 }
 
 bar();
@@ -323,8 +323,8 @@ function bar () {
     console.log(foo);
     foo = 2;
 }
-bar();  // => 1
-console.log(foo); // => 2
+bar();
+console.log(foo);
 ```
 
 这题也是考察的作用域链查找，`bar` 里操作的 `foo` 本地没有定义，所以应该是上层作用域的变量。
@@ -337,8 +337,8 @@ function bar (foo) {
     console.log(foo);
     foo = 234;
 }
-bar(123);  // => 123
-console.log(foo); // => 1
+bar(123);
+console.log(foo);
 ```
 
 运行 `bar` 函数的时候将 `123` 数字作为实参传入，所以操作的还是本地作用域的 `foo`。
@@ -356,7 +356,7 @@ function foo () {
 }
 
 var bar = foo();
-bar(); // => 2
+bar();
 ```
 
 这道题目主要考察闭包和函数作用域的概念，我们只要记住：**函数能够访问到的上层作用域，是在函数声明时候就已经确定了的，函数声明在哪里，上层作用域就在哪里，和拿到哪里执行没有关系**。这道题目中，匿名函数被作为闭包返回并在外部调用，但它内部的作用域链引用到了父函数的变量对象中的 `a` ，所以作用域链查找时，打印出来的是 `2`。
@@ -374,7 +374,7 @@ function foo () {
 }
 
 var bar = foo().bind(this);
-bar(); // => 1
+bar();
 ```
 
 这题考察的是执行环境中的 `this` 指向的问题，由于闭包内明确指定访问 `this` 中的 `a` 属性，并且闭包被 `bind`  绑定在全局环境下运行，所以打印出的是全局对象中的 `a`。
