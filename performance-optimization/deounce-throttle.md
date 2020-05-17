@@ -29,7 +29,9 @@ description: 这两个东西，你肯定听过，就是两种优化浏览器性�
   * 可用于 **window.resize** 事件，比如窗口缩放完成后，才会重新计算部分 `DOM` 尺寸
 * 节流（throttle），用于监听 `mousemove`、 鼠标滚动等事件，通常可用于：**拖拽动画**、**下拉加载**。
 
-> 节流通常用在比防抖刷新更频繁的场景下，而且大部分是需要涉及动画的操作。
+{% hint style="info" %}
+节流通常用在比防抖刷新更频繁的场景下，而且大部分是需要涉及动画的操作。
+{% endhint %}
 
 ### Talking is cheap show me the code
 
@@ -82,7 +84,9 @@ let handleMouseMove = throttle(function(e) {
 document.querySelector("#panel").addEventListener('mousemove', handleMouseMove);
 ```
 
-> 从代码上看不难发现，节流只是在防抖的基础上加了时间差的判断，多穿了件马甲而已。
+{% hint style="info" %}
+从代码上看不难发现，节流只是在防抖的基础上加了时间差的判断，多穿了件马甲而已。
+{% endhint %}
 
 ### 小兄弟，你是否还有很多问号？？
 

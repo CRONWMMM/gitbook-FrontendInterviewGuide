@@ -158,6 +158,25 @@ sayA();
 
 当闭包的父包裹函数执行完成后，父函数本身执行环境的作用域链会被销毁，但是由于闭包的作用域链仍然在引用父函数的变量对象，导致了父函数的变量对象会一直驻存于内存，无法销毁，除非闭包的引用被销毁，闭包不再引用父函数的变量对象，这块内存才能被释放掉。过度使用闭包会造成 **内存泄露** 的问题，这块等到闭包章节再做详细分析。
 
+### 执行上下文总结
+
+我们可以用下面这个列表来概括程序执行的整个过程：
+
+1. 函数被调用
+2. 在执行具体的函数代码之前，创建了执行上下文
+3. 进入执行上下文的创建阶段：
+   1. 初始化作用域链
+   2. 创建 `arguments object` 检查上下文中的参数，初始化名称和值并创建引用副本
+   3. 扫描上下文找到所有函数声明：
+      1. 对于每个找到的函数，用它们的原生函数名，在变量对象中创建一个属性，该属性里存放的是一个指向实际内存地址的指针
+      2. 如果函数名称已经存在了，属性的引用指针将会被覆盖
+   4. 扫描上下文找到所有 `var` 的变量声明：
+      1. 对于每个找到的变量声明，用它们的原生变量名，在变量对象中创建一个属性，并且使用 `undefined` 来初始化
+      2. 如果变量名作为属性在变量对象中已存在，则不做任何处理并接着扫描
+   5. 确定 `this` 值
+4. 进入执行上下文的执行阶段：
+   1. 在上下文中运行/解释函数代码，并在代码逐行执行时分配变量值。
+
 ### 执行上下文栈
 
 当一段脚本运行起来的时候，可能会调用很多函数并产生很多函数执行上下文，那么问题来了，这些执行上下文该怎么管理呢？为了解决这个问题，`javascript` 引擎就创建了 “执行上下文栈” （`Execution context stack` 简称 `ECS`）来管理执行上下文。
@@ -393,6 +412,8 @@ bar();
 
 * [JavaScript 深入之执行上下文](https://github.com/mqyqingfeng/Blog/issues/4)
 * [JavaScript深入之变量对象](https://github.com/mqyqingfeng/Blog/issues/5)
+* [What is the execution context in javascript](http://davidshariff.com/blog/what-is-the-execution-context-in-javascript/)
+* [Understanding Execution Context and Execution Stack in Javascript](https://blog.bitsrc.io/understanding-execution-context-and-execution-stack-in-javascript-1c9ea8642dd0)
 * \*\*\*\*[图解Javascript——变量对象和活动对象](https://www.cnblogs.com/ivehd/p/vo_ao.html)
 * [\[译\] 理解 JavaScript 中的执行上下文和执行栈](https://juejin.im/post/5ba32171f265da0ab719a6d7#heading-1)
 * [理解Javascript之执行上下文\(Execution Context**\)**](https://www.cnblogs.com/MinLee/p/5862271.html)\*\*\*\*
