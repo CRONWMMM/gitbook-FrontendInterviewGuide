@@ -7,6 +7,7 @@
 * [javascript 基础](javascript-basics/javascript-basics.md)
 * [原型链及继承](javascript-basics/prototype-chain-and-inheritance.md)
 * [执行上下文](javascript-basics/execution-context.md)
+* [作用域和闭包](javascript-basics/scope-and-closure.md)
 * [模块化](javascript-basics/modularization.md)
 
 ## 性能优化 <a id="performance-optimization"></a>
