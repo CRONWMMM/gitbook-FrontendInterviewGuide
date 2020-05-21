@@ -382,7 +382,9 @@ baz(); // 这就形成了一个闭包
 
 ### 闭包的应用场景
 
-闭包的应用中，大多数是在需要维护内部变量的场景下。比如：单例模式
+闭包的应用中，大多数是在需要维护内部变量的场景下。
+
+#### 单例模式
 
 ```javascript
 // 单例模式
@@ -409,11 +411,25 @@ console.log(sa === sb); // true
 console.log(sa.data); // 'singleton'
 ```
 
-模拟私有变量
+#### 模拟私有变量
 
 ```javascript
-// 记忆函数
-function get {}
+// 模拟私有变量
+function getGeneratorFunc () {
+    var _name = 'John';
+    var _age = 22;
+    
+    return function () {
+        return {
+            getName: function () {return _name;},
+            getAge: function() {return _age;}
+        };
+    };
+}
+
+var obj = getGeneratorFunc()();
+obj.getName();
+obj.getAge();
 ```
 
 ### 闭包的问题
