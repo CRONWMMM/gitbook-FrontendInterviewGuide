@@ -157,6 +157,34 @@ bar();
 
 ### 块级作用域
 
+什么是块级作用域呢？简单来说，花括号内 `{...}` 的区域就是块级作用域区域。
+
+很多语言本身都是支持块级作用域的。上面我们说，`javascript` 中大部分情况下，只有两种作用域类型：**全局作用域** 和 **函数作用域**，那么 `javascript` 中有没有块级作用域呢？来看下面的代码：
+
+```javascript
+if (true) {
+    var a = 1;
+}
+
+console.log(a); // 结果???
+```
+
+运行后会发现，结果还是 `1`，花括号内定义并赋值的 a 变量跑到全局了。这足以说明，`javascript` 不是原生支持块级作用域的，起码创作者创造这门语言的时候压根就没把块级作用域的事情考虑进去...（出来背锅！！）
+
+但是 `ES6` 标准提出了使用 `let` 和 `const` 代替 `var` 关键字，来“创建块级作用域”。也就是说，上述代码改成如下方式，块级作用域是有效的：
+
+```javascript
+if (true) {
+    let a = 1;
+}
+
+console.log(a); // ReferenceError
+```
+
+{% hint style="info" %}
+关于 `let` 和 `const` 的更多细节，进入 [传送门](https://mitianyi.gitbook.io/frontend-interview-guide/es6/let-and-const)
+{% endhint %}
+
 ### 创建作用域
 
 ### 闭包
