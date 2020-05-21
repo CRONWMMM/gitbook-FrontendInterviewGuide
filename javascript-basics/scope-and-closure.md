@@ -303,11 +303,49 @@ module2(); // => 2
 })();
 ```
 
-将函数声明改写成匿名函数表达式，封装性更好，代码也更简洁，解决了模块名污染全局作用域的问题。
+将函数声明改写成 **立即调用函数表达式（`Immediately Invoked Function Expression` 简写 `IIFE`**），封装性更好，代码也更简洁，解决了模块名污染全局作用域的问题。
 
 {% hint style="warning" %}
 函数声明和函数表达式，最简单的区分方法，就是看是不是 `function` 关键字开头：是 `function` 开头的就是函数声明，否则就是函数表达式。
 {% endhint %}
+
+上面的代码采用了 `IIFE` 的写法，已经进化很多了，我们可以再把它强化一下，强化成后浪版，赋予它判断外部环境的权利——**选择的权力**。
+
+```javascript
+(function (global) {
+    if (global...) {
+        // is browser
+    } else if (global...) {
+        // is nodejs
+    }
+})(window);
+```
+
+让后浪继续奔涌，我们的想象力不足以想象  `UMD` 模块化的代码：
+
+```javascript
+// UMD 模块化
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD
+        define(['jquery'], factory);
+    } else if (typeof exports === 'object') {
+        // Node, CommonJS-like
+        module.exports = factory(require('jquery'));
+    } else {
+        // Browser globals (root is window)
+        root.returnExports = factory(root.jQuery);
+    }
+}(this, function ($) {
+    //    methods
+    function myFunc(){};
+
+    //    exposed public method
+    return myFunc;
+}));
+```
+
+我看着作用域的模块化应用场景，真的是满怀羡慕。如果你也和我一样羡慕并且，想了解更多关于模块化的东西，请进入 [传送门](https://mitianyi.gitbook.io/frontend-interview-guide/javascript-basics/modularization)。
 
 ### 闭包
 
