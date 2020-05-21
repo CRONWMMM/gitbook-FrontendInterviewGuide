@@ -187,6 +187,83 @@ console.log(a); // ReferenceError
 
 ### 创建作用域
 
+在 `javascript` 中，我们有几种创建 / 改变作用域的手段：
+
+1. 定义函数，创建函数作用（推荐）：
+
+   ```javascript
+   function foo () {
+       // 创建了一个 foo 的函数作用域
+   }
+   ```
+
+2. 使用 `let` 和 `const` 创建块级作用域（推荐）：
+
+   ```javascript
+   for (let i = 0; i < 5; i++) {
+       console.log(i);
+   }
+
+   console.log(i); // ReferenceError
+   ```
+
+3. `try catch` 创建作用域（不推荐）,`err` 仅存在于 `catch` 子句中：
+
+   ```javascript
+   try {
+   	undefined(); // 强制产生异常
+   }
+   catch (err) {
+   	console.log( err ); // TypeError: undefined is not a function
+   }
+
+   console.log( err ); // ReferenceError: `err` not found
+   ```
+
+4. 使用 eval “欺骗” 词法作用域（不推荐）：
+
+   ```javascript
+   function foo(str, a) {
+   	eval( str );
+   	console.log( a, b );
+   }
+
+   var b = 2;
+
+   foo( "var b = 3;", 1 ); // 1 3
+   ```
+
+5. 使用 `with` 欺骗词法作用域（不推荐）：
+
+   ```javascript
+   function foo(obj) {
+   	with (obj) {
+   		a = 2;
+   	}
+   }
+
+   var o1 = {
+   	a: 3
+   };
+
+   var o2 = {
+   	b: 3
+   };
+
+   foo( o1 );
+   console.log( o1.a ); // 2
+
+   foo( o2 );
+   console.log( o2.a ); // undefined
+   console.log( a ); // 2 -- 全局作用域被泄漏了！
+   ```
+
+{% hint style="success" %}
+总结下来，能够使用的创建作用域的方式就两种：**定义函数创建** 和 **`let const` 创建**。
+{% endhint %}
+
+### 作用域的运用
+
 ### 闭包
 
 ### 闭包的运用
