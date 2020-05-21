@@ -411,10 +411,10 @@ console.log(sa === sb); // true
 console.log(sa.data); // 'singleton'
 ```
 
-#### 模拟私有变量
+#### 模拟私有属性
 
 ```javascript
-// 模拟私有变量
+// 模拟私有属性
 function getGeneratorFunc () {
     var _name = 'John';
     var _age = 22;
@@ -437,20 +437,20 @@ obj.getAge();
 ```javascript
 function typeOf (value) {
     return function (obj) {
-            const toString = Object.prototype.toString;
-            const map = {
-                '[object Boolean]'	 : 'boolean',
-                '[object Number]' 	 : 'number',
-                '[object String]' 	 : 'string',
-                '[object Function]'  : 'function',
-                '[object Array]' 	 : 'array',
-                '[object Date]' 	 : 'date',
-                '[object RegExp]'	 : 'regExp',
-                '[object Undefined]' : 'undefined',
-                '[object Null]' 	 : 'null',
-                '[object Object]' 	 : 'object'
-            };
-            return map[toString.call(obj)] === value;
+        const toString = Object.prototype.toString;
+        const map = {
+            '[object Boolean]'	 : 'boolean',
+            '[object Number]' 	 : 'number',
+            '[object String]' 	 : 'string',
+            '[object Function]'  : 'function',
+            '[object Array]' 	 : 'array',
+            '[object Date]' 	 : 'date',
+            '[object RegExp]'	 : 'regExp',
+            '[object Undefined]' : 'undefined',
+            '[object Null]' 	 : 'null',
+            '[object Object]' 	 : 'object'
+        };
+        return map[toString.call(obj)] === value;
     }
 }
 
