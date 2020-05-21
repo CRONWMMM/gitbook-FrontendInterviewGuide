@@ -378,9 +378,43 @@ baz(); // 这就形成了一个闭包
 3. 函数 `foo` 运行完毕，将内部函数 `bar` 的引用赋值给外部的变量 `baz` ，此时 `baz` 指针指向的还是 `bar` ，因此哪怕它位于 `foo` 作用域之外，它还是能够获取到 `foo` 的内部变量。
 4. `baz` 在外部被执行，`baz` 的内部可执行代码 `console.log` 向作用域请求获取 `a` 变量，本地作用域没有找到，继续请求父级作用域，找到了 `foo` 中的 `a` 变量，返回给 `console.log`，打印出 `2`。
 
-闭包的执行看起来像是开发者使用的一个小小的 “作弊手段” ——**绕过了作用域的监管机制，从外部也能获取到内部作用域的信息**。
+闭包的执行看起来像是开发者使用的一个小小的 “作弊手段” ——**绕过了作用域的监管机制，从外部也能获取到内部作用域的信息**。闭包的这一特性极大地丰富了开发人员的编码方式，也提供了很多有效的运用场景。
 
 ### 闭包的应用场景
+
+闭包的应用中，大多数是在需要维护内部变量的场景下。比如：单例模式
+
+```javascript
+// 单例模式
+function Singleton(){
+    this.data = 'singleton';
+}
+
+Singleton.getInstance = (function () {
+    var instance;
+    
+    return function(){
+        if (instance) {
+            return instance;
+        } else {
+            instance = new Singleton();
+            return instance;
+        }
+    }
+})();
+
+var sa = Singleton.getInstance();
+var sb = Singleton.getInstance();
+console.log(sa === sb); // true
+console.log(sa.data); // 'singleton'
+```
+
+模拟私有变量
+
+```javascript
+// 记忆函数
+function get {}
+```
 
 ### 闭包的问题
 
