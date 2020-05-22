@@ -498,7 +498,7 @@ isRegExp({}); // => false
 
 ### 闭包的问题
 
-闭包的使用场景如此广泛，那我们是不是可以大量使用呢？不可以，闭包过度使用会导致性能问题，还是看上面的代码：
+从上面的介绍中我们可以得知，闭包的使用场景非常广泛，那我们是不是可以大量使用闭包呢？不可以，因为闭包过度使用会导致性能问题，还是看之前演示的一段代码：
 
 ```javascript
 function foo() {
@@ -520,7 +520,7 @@ baz(); // 这就形成了一个闭包
 
 我们知道，`javascript` 内部的垃圾回收机制用的是引用计数收集：即当内存中的一个变量被引用一次，计数就加一。垃圾回收机制会以固定的时间轮询这些变量，将计数为 `0` 的变量标记为失效变量并将之清除从而释放内存。
 
-上述代码中，理论上来说 `foo` 函数作用域隔绝了外部环境，所有变量引用都在函数内部完成，`foo` 运行完成以后，内部的变量就应该被销毁，内存被回收。然而闭包导致了全局作用域始终存在一个 `baz` 的变量在引用着 `foo` 内部的 `bar` 函数，这就意味着 `foo` 内部定义的 `bar` 函数引用数始终为 `1`，垃圾运行机制就无法把它销毁。更糟糕的是，`bar` 有可能还要使用到父作用域 `foo` 中的变量信息，那它们自然也不能被销毁... JS 引擎无法判断你什么时候还会调用闭包函数，只能一直让这些数据占用着内存。
+上述代码中，理论上来说， `foo` 函数作用域隔绝了外部环境，所有变量引用都在函数内部完成，`foo` 运行完成以后，内部的变量就应该被销毁，内存被回收。然而闭包导致了全局作用域始终存在一个 `baz` 的变量在引用着 `foo` 内部的 `bar` 函数，这就意味着 `foo` 内部定义的 `bar` 函数引用数始终为 `1`，垃圾运行机制就无法把它销毁。更糟糕的是，`bar` 有可能还要使用到父作用域 `foo` 中的变量信息，那它们自然也不能被销毁... JS 引擎无法判断你什么时候还会调用闭包函数，只能一直让这些数据占用着内存。
 
 {% hint style="danger" %}
 这种由于闭包使用过度而导致的内存占用无法释放的情况，我们称之为：**内存泄露**。
@@ -532,14 +532,37 @@ baz(); // 这就形成了一个闭包
 **内存泄露** 是指当一块内存不再被应用程序使用的时候，由于某种原因，这块内存没有返还给操作系统或者内存池的现象。内存泄漏可能会导致应用程序卡顿或者崩溃。
 {% endhint %}
 
+造成内存泄露的原因有很多，除了闭包以外，还有 **全局变量的无意创建**。开发者的本意是想将变量作为局部变量使用，然而忘记写 `var` 导致变量被泄露到全局中：
+
+```javascript
+function foo() {
+    b = 2;
+    console.log(b);
+}
+
+foo(); // 2
+
+console.log(b); // 2
+```
+
+还有 `DOM` 的事件绑定：
+
+```javascript
+const wrapDOM = document.getElementById('wrap');
+wrapDOM.Click = fu
+```
+
+
+
 ### 内存泄露的排查手段
 
 ### 相关参考
 
+* 《你不知道的JavaScript》
 * [“You Don’t Know JS:” My Understanding of Scopes and Closures](https://medium.com/better-programming/you-dont-know-js-my-understanding-of-scopes-closures-e0d2bfe4c328)
 * [Closures - JavaScript \| MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
 *  [JavaScript深入之词法作用域和动态作用域](https://github.com/mqyqingfeng/Blog/issues/3)
 * [你不懂 JS —— 作用域与闭包](https://www.kancloud.cn/kancloud/you-dont-know-js-scope-closures/516609)
 * [从 LHS 与 RHS 角度浅谈Js变量声明与赋值](https://github.com/MrErHu/blog/issues/12)
-* 《你不知道的JavaScript》
+* [前端面试之道](https://juejin.im/book/5bdc715fe51d454e755f75ef)
 
