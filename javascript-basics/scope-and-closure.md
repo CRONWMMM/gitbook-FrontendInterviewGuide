@@ -382,9 +382,13 @@ baz(); // 这就形成了一个闭包
 
 ### 闭包的应用场景
 
-闭包的应用中，大多数是在需要维护内部变量的场景下。
+{% hint style="info" %}
+闭包的应用，大多数是在需要维护内部变量的场景下。
+{% endhint %}
 
 #### 单例模式
+
+单例模式是一种常见的涉及模式，它保证了一个类只有一个实例。实现方法一般是先判断实例是否存在，如果存在就直接返回，否则就创建了再返回。单例模式的好处就是避免了重复实例化带来的内存开销：
 
 ```javascript
 // 单例模式
@@ -413,6 +417,8 @@ console.log(sa.data); // 'singleton'
 
 #### 模拟私有属性
 
+`javascript` 没有 `java` 中那种 `public` `private` 的访问权限控制，对象中的所用方法和属性均可以访问，这就造成了安全隐患，内部的属性任何开发者都可以随意修改。虽然语言层面不支持私有属性的创建，但是我们可以用闭包的手段来模拟出私有属性：
+
 ```javascript
 // 模拟私有属性
 function getGeneratorFunc () {
@@ -428,11 +434,36 @@ function getGeneratorFunc () {
 }
 
 var obj = getGeneratorFunc()();
-obj.getName();
-obj.getAge();
+obj.getName(); // John
+obj.getAge(); // 22
+obj._age; // undefined
 ```
 
 #### 柯里化
+
+> 柯里化（`currying`），是把接受多个参数的函数变换成接受一个单一参数（最初函数的第一个参数）的函数，并且返回接受余下的参数而且返回结果的新函数的技术。
+
+这个概念有点抽象，实际上柯里化是高阶函数的一个用法，`javascript` 中常见的 `bind` 方法就可以用柯里化的方法来实现：
+
+```javascript
+Function.prototype.myBind = function (context = window) {
+    if (typeof this !== 'function') throw new Error('Error');
+    let selfFunc = this;
+    let args = [...arguments].slice(1);
+    
+    return function F () {
+        // 因为返回了一个函数，可以 new F()，所以需要判断
+        if (this instanceof F) {
+            return new selfFunc(...args, arguments);
+        } else  {
+            // bind 可以实现类似这样的代码 f.bind(obj, 1)(2)，所以需要将两边的参数拼接起来
+            return selfFunc.apply(context, args.concat(arguments));
+        }
+    }
+}
+```
+
+柯里化的优势之一就是 **参数的复用**，它可以在传入参数的基础上生成另一个全新的函数，来看下面这个类型判断函数：
 
 ```javascript
 function typeOf (value) {
@@ -443,11 +474,11 @@ function typeOf (value) {
             '[object Number]' 	 : 'number',
             '[object String]' 	 : 'string',
             '[object Function]'  : 'function',
-            '[object Array]' 	 : 'array',
-            '[object Date]' 	 : 'date',
-            '[object RegExp]'	 : 'regExp',
+            '[object Array]'     : 'array',
+            '[object Date]'      : 'date',
+            '[object RegExp]'    : 'regExp',
             '[object Undefined]' : 'undefined',
-            '[object Null]' 	 : 'null',
+            '[object Null]'      : 'null',
             '[object Object]' 	 : 'object'
         };
         return map[toString.call(obj)] === value;
@@ -462,6 +493,8 @@ isNumber(0); // => true
 isFunction(function () {}); // true
 isRegExp({}); // => false
 ```
+
+通过向 `typeOf` 里传入不同的类型字符串参数，就可以生成对应的类型判断函数，作为语法糖在业务代码里重复使用。
 
 ### 闭包的问题
 
