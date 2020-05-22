@@ -549,7 +549,7 @@ console.log(b); // 2
 
 ```javascript
 const wrapDOM = document.getElementById('wrap');
-wrapDOM.onClick = function (e) {console.log(e);};
+wrapDOM.onclick = function (e) {console.log(e);};
 
 // some codes ...
 
@@ -559,7 +559,118 @@ wrapDOM.parentNode.removeChild(wrapDOM);
 
 ### 内存泄露的排查手段
 
+可能大家都听过臭名昭著的 “内存泄露”，然而面对茫茫祖传代码，如何找到造成内存泄露的地方，却让人无从下手。这边我们还是借助谷歌的开发者工具， `Chrome` 浏览器，`F12` 打开开发者工具，我找了阮一峰老师的 ES6 网站演示。
 
+#### Performance
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe308814da0ca?w=1079&h=532&f=png&s=53927)
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe318e7c8f510?w=1318&h=752&f=png&s=57424)
+
+点击这个按钮启动记录，然后切换到网页进行操作，录制完成后点击 `stop` 按钮，开发者工具会从录制时刻开始记录当前应用的各项数据情况。
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe328564ae5b1?w=1401&h=847&f=png&s=48447)
+
+选中`JS Heap`，下面展现出来的一条蓝线，就是代表了这段记录过程中，JS 堆内存信息的变化情况。
+
+有大佬说，根据这条蓝线就可以判断是否存在内存泄漏的情况：**如果这条蓝线一直成上升趋势，那基本就是内存泄漏了。**其实我觉得这么讲有失偏颇，JS 堆内存占用率上升并不一定就是内存泄漏，只能说明有很多未被释放的内存而已，至于这些内存是否真的在使用，还是说确实是内存泄漏，还需要进一步排查。
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe354e74c1987?w=1919&h=1039&f=png&s=210560)
+
+#### memory
+
+借助开发者工具的 Memory 选项，可以更精确地定位内存使用情况。
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe400c033c14f?w=1422&h=856&f=png&s=70700)
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe413591c09f3?w=1121&h=689&f=png&s=71282)
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe43642d73636?w=1922&h=909&f=png&s=174796)
+
+当生成了第一个快照的时候，开发者工具窗口已经显示了很详细的内存占用情况。
+
+字段解释：
+
+* `Constructor` — 占用内存的资源类型
+* `Distance` — 当前对象到根的引用层级距离
+* `Shallow Size` — 对象所占内存（不包含内部引用的其它对象所占的内存）\(单位：字节\)
+* `Retained Size` — 对象所占总内存（包含内部引用的其它对象所占的内存）\(单位：字节\)
+
+将每项展开可以查看更详细的数据信息。
+
+我们再次切回网页，继续操作几次，然后再次生成一个快照。
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe4ad51b17a00?w=1930&h=890&f=png&s=178531)
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe4c669e3200c?w=1920&h=1017&f=png&s=167124)
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe4e0a8a95906?w=1927&h=1007&f=png&s=160134)
+
+这边需要特别注意这个 `#Delta` ，如果是正值，就代表新生成的内存多，释放的内存少。其中的闭包项，如果是正值，就说明存在内存泄漏。
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe50b14415071?w=1920&h=1017&f=png&s=168751)
+
+下面我们到代码里找一个内存泄漏的问题：
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe528db25d0c2?w=1920&h=1017&f=png&s=191424)
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16efe53c6557d2d8?w=1920&h=1017&f=png&s=221191)
+
+### 内存泄露的解决方案
+
+1. 使用严格模式，避免不经意间的全局变量泄露：
+
+   ```javascript
+   "use strict";
+
+   function foo () {
+   	b = 2;
+   }
+
+   foo(); // ReferenceError: b is not defined
+   ```
+
+2. 关注 `DOM` 生命周期，在销毁阶段记得解绑相关事件：
+
+   ```javascript
+   const wrapDOM = document.getElementById('wrap');
+   wrapDOM.onclick = function (e) {console.log(e);};
+
+   // some codes ...
+
+   // remove wrapDOM
+   wrapDOM.onclick = null;
+   wrapDOM.parentNode.removeChild(wrapDOM);
+   ```
+
+   或者可以使用事件委托的手段统一处理事件，减少由于事件绑定带来的额外内存开销：
+
+   ```javascript
+   document.body.onclick = function (e) {
+       if (isWrapDOM) {
+           // ...
+       } else {
+           // ...
+       }
+   }
+   ```
+
+3. 避免过度使用闭包。
+
+{% hint style="warning" %}
+大部分的内存泄漏还是由于代码不规范导致的。**代码千万条，规范第一条，代码不规范，开发两行泪。**
+{% endhint %}
+
+### 总结
+
+1. `javascript` 语言层面只原生支持两种作用域类型：**全局作用域** 和 **函数作用域** 。全局作用域程序运行就有，函数作用域只有定义函数的时候才有，它们之间是包含的关系。
+2. 作用域之间是可以嵌套的，我们把这种嵌套关系称为 **作用域链**。
+3. 可执行代码在作用域中查询变量时，只能查询 **本地作用域** 及 **上层作用域**，不能查找内部的函数作用域。JS 引擎搜索变量时，会先询问本地作用域，找到即返回，找不到再去询问上层作用域...层层往上，直到全局作用域。
+4. `javascript` 中使用的是 **“词法作用域”**，因此函数作用域的范围在函数定义时就已经被确定，和函数在哪执行没有关系。
+5. 有权访问另一个函数内部变量的函数，我们称为 **闭包**。**闭包的本质是利用了作用域的机制，来达到外部作用域访问内部作用域的目的。**
+6. 闭包的使用场景非常广泛，然而过度使用会导致闭包内的变量所占用的内存空间无法释放，带来 **内存泄露** 的问题。
+7. 我们可以借助于 `chrome` 开发者工具查找代码中导致了内存泄露的代码。
+8. 避免内存泄露的几种方法：避免使用全局变量、谨慎地为`DOM` 绑定事件、避免过度使用闭包。最重要的，还是代码规范。 😃 
 
 ### 相关参考
 
@@ -570,4 +681,5 @@ wrapDOM.parentNode.removeChild(wrapDOM);
 * [你不懂 JS —— 作用域与闭包](https://www.kancloud.cn/kancloud/you-dont-know-js-scope-closures/516609)
 * [从 LHS 与 RHS 角度浅谈Js变量声明与赋值](https://github.com/MrErHu/blog/issues/12)
 * [前端面试之道](https://juejin.im/book/5bdc715fe51d454e755f75ef)
+* [记录一次前端内存泄漏排查经历](https://juejin.im/post/5df33d97518825126e639c60)
 
