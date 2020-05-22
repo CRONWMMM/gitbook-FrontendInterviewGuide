@@ -545,16 +545,21 @@ foo(); // 2
 console.log(b); // 2
 ```
 
-还有 `DOM` 的事件绑定：
+还有 `DOM` 的事件绑定，移除 `DOM` 元素前如果忘记了注销掉其中绑定的事件方法，也会造成内存泄露：
 
 ```javascript
 const wrapDOM = document.getElementById('wrap');
-wrapDOM.Click = fu
+wrapDOM.onClick = function (e) {console.log(e);};
+
+// some codes ...
+
+// remove wrapDOM
+wrapDOM.parentNode.removeChild(wrapDOM);
 ```
 
-
-
 ### 内存泄露的排查手段
+
+
 
 ### 相关参考
 
