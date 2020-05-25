@@ -28,7 +28,7 @@
 
 * [浏览器下的 Event Loop](browser/event-loop-in-browser.md)
 
-## 计算机基础
+## 计算机基础 <a id="basic-of-computer"></a>
 
-* [HTTP/TCP/IP](ji-suan-ji-ji-chu/http-tcp-ip.md)
+* [HTTP/TCP/IP](basic-of-computer/http-tcp-ip.md)
 
