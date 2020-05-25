@@ -563,29 +563,29 @@ wrapDOM.parentNode.removeChild(wrapDOM);
 
 #### Performance
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe308814da0ca?w=1079&h=532&f=png&s=53927)
+![](../.gitbook/assets/chromef12performance1.jpg)
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe318e7c8f510?w=1318&h=752&f=png&s=57424)
+![](../.gitbook/assets/chromef12performance2.jpg)
 
 点击这个按钮启动记录，然后切换到网页进行操作，录制完成后点击 `stop` 按钮，开发者工具会从录制时刻开始记录当前应用的各项数据情况。
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe328564ae5b1?w=1401&h=847&f=png&s=48447)
+![](../.gitbook/assets/chromef12performance3.jpg)
 
 选中`JS Heap`，下面展现出来的一条蓝线，就是代表了这段记录过程中，JS 堆内存信息的变化情况。
 
 有大佬说，根据这条蓝线就可以判断是否存在内存泄漏的情况：**如果这条蓝线一直成上升趋势，那基本就是内存泄漏了。**其实我觉得这么讲有失偏颇，JS 堆内存占用率上升并不一定就是内存泄漏，只能说明有很多未被释放的内存而已，至于这些内存是否真的在使用，还是说确实是内存泄漏，还需要进一步排查。
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe354e74c1987?w=1919&h=1039&f=png&s=210560)
+![](../.gitbook/assets/chromef12performance4.jpg)
 
 #### memory
 
 借助开发者工具的 Memory 选项，可以更精确地定位内存使用情况。
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe400c033c14f?w=1422&h=856&f=png&s=70700)
+![](../.gitbook/assets/chromef12memory1.jpg)
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe413591c09f3?w=1121&h=689&f=png&s=71282)
+![](../.gitbook/assets/chromef12memory2.jpg)
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe43642d73636?w=1922&h=909&f=png&s=174796)
+![](../.gitbook/assets/chromef12memory3.jpg)
 
 当生成了第一个快照的时候，开发者工具窗口已经显示了很详细的内存占用情况。
 
@@ -600,21 +600,21 @@ wrapDOM.parentNode.removeChild(wrapDOM);
 
 我们再次切回网页，继续操作几次，然后再次生成一个快照。
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe4ad51b17a00?w=1930&h=890&f=png&s=178531)
+![](../.gitbook/assets/chromef12memory4.jpg)
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe4c669e3200c?w=1920&h=1017&f=png&s=167124)
+![](../.gitbook/assets/chromef12memory5.jpg)
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe4e0a8a95906?w=1927&h=1007&f=png&s=160134)
+![](../.gitbook/assets/chromef12memory6.jpg)
 
 这边需要特别注意这个 `#Delta` ，如果是正值，就代表新生成的内存多，释放的内存少。其中的闭包项，如果是正值，就说明存在内存泄漏。
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe50b14415071?w=1920&h=1017&f=png&s=168751)
+![](../.gitbook/assets/chromef12memory7.jpg)
 
 下面我们到代码里找一个内存泄漏的问题：
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe528db25d0c2?w=1920&h=1017&f=png&s=191424)
+![](../.gitbook/assets/chromef12memory8.jpg)
 
-![](https://user-gold-cdn.xitu.io/2019/12/13/16efe53c6557d2d8?w=1920&h=1017&f=png&s=221191)
+![](../.gitbook/assets/chromef12memory9.jpg)
 
 ### 内存泄露的解决方案
 
