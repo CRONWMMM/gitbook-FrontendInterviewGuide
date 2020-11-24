@@ -5,6 +5,7 @@
 ## javascript 基础 <a id="javascript-basics"></a>
 
 * [javascript 基础](javascript-basics/javascript-basics.md)
+* [javascript 类型转换](javascript-basics/javascript-type-transform.md)
 * [原型链及继承](javascript-basics/prototype-chain-and-inheritance.md)
 * [执行上下文](javascript-basics/execution-context.md)
 * [作用域和闭包](javascript-basics/scope-and-closure.md)
