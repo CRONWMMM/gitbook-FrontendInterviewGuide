@@ -1,6 +1,6 @@
 # Vue基础
 
-### 数据与方法
+## 数据与方法
 
  当一个 Vue 实例被创建时，它将 `data` 对象中的所有的 property 加入到 Vue 的**响应式系统**中。当这些 property 的值发生改变时，视图将会产生“响应”，即匹配更新为新的值。当这些数据改变时，视图会进行重渲染。
 
@@ -14,11 +14,15 @@
 当使用 Object.freeze\(\) 对属性进行冻结时，Vue 系统将不再追踪 property 的变化
 {% endhint %}
 
-### **模板**
+#### 为什么 data 需要是函数？
+
+组件复用时所有组件实例都会共享 `data`，如果 `data` 是对象的话，就会造成一个组件修改 `data` 以后会影响到其他所有组件，所以需要将 `data` 写成函数，每次用到就调用一次函数获得新的数据。
+
+当我们使用 `new Vue()` 的方式的时候，无论我们将 `data` 设置为对象还是函数都是可以的，因为 `new Vue()` 的方式是生成一个根组件，该组件不会复用，也就不存在共享 `data` 的情况了。
+
+## **模板**
 
 模板这块没有特别需要说明的，只有一处需要注意一下：
-
-
 
 有些 HTML 元素，诸如 `<ul>`、`<ol>`、`<table>` 和 `<select>`，对于哪些元素可以出现在其内部是有严格限制的。而有些元素，诸如 `<li>`、`<tr>` 和 `<option>`，只能出现在其它某些特定的元素内部。
 
@@ -44,13 +48,13 @@
 * 单文件组件 \(`.vue`\)
 * `<script type="text/x-template">`
 
-### 生命周期
+## 生命周期
 
 {% hint style="info" %}
  每个 Vue 实例在被创建时都要经过一系列的初始化过程——例如，需要设置数据监听、编译模板、将实例挂载到 DOM 并在数据变化时更新 DOM 等。同时在这个过程中也会运行一些叫做**生命周期钩子**的函数，这给了用户在不同阶段添加自己的代码的机会。
 {% endhint %}
 
-**Vue 的全部生命周期钩子（非 SSR）：**
+### **Vue 的全部生命周期钩子（非 SSR）：**
 
 * **beforeCreate**
 
@@ -114,7 +118,7 @@
 
 ![](../.gitbook/assets/vue-lifecycle.png)
 
-#### 关于Vue生命周期的总结：
+### 关于Vue生命周期的总结：
 
 在 `beforeCreate` 钩子函数调用的时候，是获取不到 `props` 或者 `data` 中的数据的，因为这些数据的初始化都在 `initState` 中。
 
@@ -128,21 +132,21 @@
 
 最后就是销毁组件的钩子函数 `beforeDestroy` 和 `destroyed`。前者适合移除事件、定时器等等，否则可能会引起内存泄露的问题。然后进行一系列的销毁操作。
 
-### 计算属性和侦听器
+## 计算属性和侦听器
 
-#### 计算属性的使用场景：
+### 计算属性的使用场景：
 
 {% hint style="info" %}
 当绑定在模板中的数据需要**依赖其他属性值进行计算，或者需要经过一些复杂计算、特殊处理才能渲染到页面上的时候**，我们可以使用计算属性：**computed**
 {% endhint %}
 
-#### **计算属性的特性：**
+### **计算属性的特性：**
 
 {% hint style="info" %}
 计算属性可以让你的绑定值依赖其他值的变化来进行动态计算，并且会根据依赖值进行缓存，只有当依赖值变化才会返回新的计算内容。
 {% endhint %}
 
-#### 计算属性和侦听器的区别：
+### 计算属性和侦听器的区别：
 
 {% hint style="info" %}
 **computed** 是计算属性，依赖其他属性计算值，并且 **computed** 的值有缓存，只有当计算值变化才会返回内容。
@@ -187,7 +191,7 @@ var vm = new Vue({
 设置侦听器 deep 为 true，则能开启对于对象属性的深度监听模式，也就是说，对象下的子属性发生变动，侦听器一样能够监测到变化并且触发。
 {% endhint %}
 
-#### 计算属性和方法的区别：
+### 计算属性和方法的区别：
 
 有的时候，计算属性和方法（methods）都可以达到相同的效果，那么它们之间的区别是什么呢？
 
@@ -197,15 +201,15 @@ var vm = new Vue({
 而 相比之下，每当触发重新渲染时，调用方法将**总会**再次执行函数，这是有性能损耗的。
 {% endhint %}
 
-### Class 与 Style 绑定
+## Class 与 Style 绑定
 
-#### 自动添加前缀
+### 自动添加前缀
 
 当 `v-bind:style` 使用需要添加浏览器引擎前缀的 CSS property 时，如 `transform`，Vue.js 会自动侦测并添加相应的前缀。
 
-### 条件渲染
+## 条件渲染
 
-#### v-show 与 v-if 区别
+### v-show 与 v-if 区别
 
 `v-show` 只是在 `display: none` 和 `display: block` 之间切换。无论初始条件是什么都会被渲染出来，后面只需要切换 CSS，DOM 还是一直保留着的。所以总的来说 `v-show` 在初始渲染时有更高的开销，但是切换开销很小，更适合于频繁切换的场景。
 
@@ -213,7 +217,7 @@ var vm = new Vue({
 
 并且基于 `v-if` 的这种惰性渲染机制，可以在必要的时候才去渲染组件，减少整个页面的初始渲染开销。
 
-#### 用 `key` 管理可复用的元素
+### 用 `key` 管理可复用的元素
 
 `Vue` 的 `key` 这个东西官网上说的官方解释有些抽象，推荐大家看：[Vue2.0 v-for 中 :key 到底有什么用？](https://www.zhihu.com/question/61064119/answer/766607894)
 
@@ -251,7 +255,7 @@ var vm = new Vue({
 
 当 `text` 发生改变时，`<span>` 总是会被替换而不是被修改，因此会触发过渡。
 
-### 列表渲染
+## 列表渲染
 
 这里的 `v-for` 指令就涉及到上面所说的 `key` 的问题。
 
@@ -267,7 +271,7 @@ var vm = new Vue({
  **不要使用 index 索引作为组件的 key！**因为，这样的话，当你删除了一项比如第二项，那么第三项组件的 key 就变成了 2 ，Vue 在进行 VNodes 比对的时候，还会认为是你只是将组件 2 的名称修改成了组件 3，然后还是会复用，于是还是会出现上面的问题。
 {% endhint %}
 
-#### 数组的更新监测
+### 数组的更新监测
 
 Vue 将被侦听的数组的变更方法进行了包裹，所以它们也将会触发视图更新。这些被包裹过的方法包括：
 
@@ -283,7 +287,7 @@ Vue 将被侦听的数组的变更方法进行了包裹，所以它们也将会�
  由于 JavaScript 的限制，Vue **不能检测** 数组和对象的变化。
 {% endhint %}
 
-### 不要将 `v-for` 与 `v-if` 一同使用 <a id="v-for-&#x4E0E;-v-if-&#x4E00;&#x540C;&#x4F7F;&#x7528;"></a>
+### 不要将 `v-for` 与 `v-if` 一同使用
 
 {% hint style="danger" %}
  **永远不要把 `v-if` 和 `v-for` 同时用在同一个元素上。**
@@ -391,5 +395,154 @@ computed: {
 ```
 {% endhint %}
 
-\*\*\*\*
+## 事件
+
+事件处理这块可能是 Vuer 用的最多的东西之一，大部分内容大家可能也了解，就没什么好说的了，就大概总结一下吧。
+
+在 Vue 中有下面几种事件的写法：
+
+* **内联写法：**
+
+  ```markup
+  <div id="example-1">
+    <button v-on:click="counter += 1">Add 1</button>
+    <p>The button above has been clicked {{ counter }} times.</p>
+  </div>
+  ```
+
+* **方法名写法**，这种写法，默认会传入一个 DOM 的原生事件对象作为事件处理函数的第一个参数
+
+  ```markup
+  <div id="example-2">
+    <!-- `greet` 是在下面定义的方法名 -->
+    <button v-on:click="greet">Greet</button>
+  </div>
+  ```
+
+  ```javascript
+    // 在 `methods` 对象中定义方法
+    methods: {
+      greet: function (event) {
+        // `this` 在方法里指向当前 Vue 实例
+        alert('Hello ' + this.name + '!')
+        // `event` 是原生 DOM 事件
+        if (event) {
+          alert(event.target.tagName)
+        }
+      }
+    }
+  ```
+
+* **内联语句中直接调用：**
+
+  ```markup
+  <div id="example-3">
+    <button v-on:click="say('hi')">Say hi</button>
+    <button v-on:click="say('what')">Say what</button>
+  </div>
+  ```
+
+  > 有时也需要在内联语句处理器中访问原始的 DOM 事件。可以用特殊变量 `$event` 把它传入方法：
+
+  ```markup
+  <button v-on:click="warn('Form cannot be submitted yet.', $event)">
+    Submit
+  </button>
+  ```
+
+### 事件修饰符
+
+这块不是面试的重点，大家大概看一下文档了解就好：[事件处理——事件修饰符](https://cn.vuejs.org/v2/guide/events.html#%E4%BA%8B%E4%BB%B6%E4%BF%AE%E9%A5%B0%E7%AC%A6)。
+
+## 双向绑定 v-model
+
+### v-model 的本质——语法糖
+
+ 你可以用 `v-model` 指令在表单 `<input>`、`<textarea>` 及 `<select>` 元素上创建双向数据绑定。其实，`v-model` 本质上只是 `v-bind:value` 和 `v-on:input` 的语法糖而已：
+
+使用 `v-model`：
+
+```markup
+<input v-model="val" />
+```
+
+等价于：
+
+```markup
+<input :value="val" @input="evt => val = evt.target.value" />
+```
+
+`v-model` 语法糖在内部为不同的输入元素使用不同的 property 并抛出不同的事件：
+
+* text 和 textarea 元素使用 `value` property 和 `input` 事件；
+* checkbox 和 radio 使用 `checked` property 和 `change` 事件；
+* select 字段将 `value` 作为 prop 并将 `change` 作为事件。
+
+### v-model 修饰符
+
+这块内容面试不太可能问到，不过作为平时开发的小技巧可以学习一下。
+
+#### `.lazy` <a id="lazy"></a>
+
+在默认情况下，`v-model` 在每次 `input` 事件触发后将输入框的值与数据进行同步 \(除了[上述](https://cn.vuejs.org/v2/guide/forms.html#vmodel-ime-tip)输入法组合文字时\)。你可以添加 `lazy` 修饰符，从而转为在 `change` 事件\_之后\_进行同步：
+
+```markup
+<!-- 在“change”时而非“input”时更新 -->
+<input v-model.lazy="msg">
+```
+
+#### `.number` <a id="number"></a>
+
+如果想自动将用户的输入值转为数值类型，可以给 `v-model` 添加 `number` 修饰符：
+
+```markup
+<input v-model.number="age" type="number">
+```
+
+这通常很有用，因为即使在 `type="number"` 时，HTML 输入元素的值也总会返回字符串。如果这个值无法被 `parseFloat()` 解析，则会返回原始的值。
+
+#### `.trim` <a id="trim"></a>
+
+如果要自动过滤用户输入的首尾空白字符，可以给 `v-model` 添加 `trim` 修饰符：
+
+```markup
+<input v-model.trim="msg">
+```
+
+### 自定义组件使用 v-model
+
+自定义组件使用 `v-model` 的方式，和原生 DOM 上绑定的 `v-model`  方式一样，只需要组件内部对外暴露 **`value prop`** ，并且组件内部向外发射 **`input`** 事件即可。
+
+{% hint style="info" %}
+**注意：**一个组件上的 `v-model` 默认会利用名为 `value` 的 prop 和名为 `input` 的事件，但是像单选框、复选框等类型的输入控件可能会将 `value` attribute 用于不同的目的。
+{% endhint %}
+
+```markup
+<custom-input v-model="searchText"></custom-input>
+```
+
+等价于
+
+```markup
+<custom-input
+  v-bind:value="searchText"
+  v-on:input="searchText = $event"
+></custom-input>
+```
+
+组件内部
+
+```javascript
+Vue.component('custom-input', {
+  props: ['value'],
+  template: `
+    <input
+      v-bind:value="value"
+      v-on:input="$emit('input', $event.target.value)"
+    >
+  `
+})
+```
+
+
 
