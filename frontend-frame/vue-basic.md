@@ -452,7 +452,52 @@ computed: {
 
 ### 事件修饰符
 
-这块不是面试的重点，大家大概看一下文档了解就好：[事件处理——事件修饰符](https://cn.vuejs.org/v2/guide/events.html#%E4%BA%8B%E4%BB%B6%E4%BF%AE%E9%A5%B0%E7%AC%A6)。
+这块不是面试的重点，大家大概看一下文档了解就好：[事件处理——事件修饰符](https://cn.vuejs.org/v2/guide/events.html#%E4%BA%8B%E4%BB%B6%E4%BF%AE%E9%A5%B0%E7%AC%A6)。只有一种需要特殊说明一下：**.sync 修饰符**
+
+`.sync 修饰符`也是语法糖的一种，在有些情况下，我们可能需要对一个 prop 进行“双向绑定”。不幸的是，真正的双向绑定会带来维护上的问题，因为子组件可以变更父组件，且在父组件和子组件都没有明显的变更来源。这个时候，我们可以使用 .sync 语法糖来模拟双向绑定，并且 .sync 也能够在语意上让子组件更改父组件的状态代码更容易被区分。
+
+```javascript
+<comp :foo.sync="bar"></comp>
+```
+
+等价于：
+
+```javascript
+<comp :foo="bar" @update:foo="val => bar = val"></comp>
+```
+
+当子组件需要更新 foo 的值时，它需要显式地触发一个更新事件：
+
+```javascript
+this.$emit('update:foo', newValue);
+```
+
+.sync 修饰符经常会用在弹框的显隐功能上：
+
+```markup
+<!-- 父组件中 -->
+<Modal :show.sync="shoModal" />
+```
+
+```markup
+<!-- 子组件中 -->
+<div class="mask" v-show="show">
+    <span class="close" @click="close">X</span>
+</div>
+```
+
+```javascript
+// 子组件 vue 文件
+{
+    props: ['show'],
+    methods: {
+        close() {
+            this.$emit('update:show', false);
+        }
+    }
+}
+
+```
 
 ## 双向绑定 v-model
 
@@ -544,5 +589,293 @@ Vue.component('custom-input', {
 })
 ```
 
+## 自定义组件
 
+{% hint style="info" %}
+组件是可复用的 Vue 实例，所以它们与 `new Vue` 接收相同的选项，例如 `data`、`computed`、`watch`、`methods` 以及生命周期钩子等。仅有的例外是像 `el` 这样根实例特有的选项。
+{% endhint %}
+
+### 全局注册
+
+直接使用 Vue.component 进行全局注册，然后再创建 Vue 的根实例，**需要注意的是：全局注册必须在根 Vue 实例创建之前。**
+
+```javascript
+Vue.component('component-a', { /* ... */ })
+Vue.component('component-b', { /* ... */ })
+Vue.component('component-c', { /* ... */ })
+
+new Vue({ el: '#app' })
+```
+
+### 局部注册
+
+ 局部注册没有什么好说的，大家基本都明白。
+
+### 单个根元素
+
+{% hint style="info" %}
+每个组件必须只有唯一一个根元素
+{% endhint %}
+
+## Props
+
+### 静态 Props 和动态 Props
+
+静态 `props`：
+
+```markup
+<my-component title="This is title" />
+```
+
+动态 `props`：
+
+```markup
+<my-component v-bind:title="title" />
+```
+
+### 多个 Props 的传入方式
+
+我们可以对一个组件传入多个 props，如果组件的 props 太多，可以将 props 组合成一个对象 prop 传入。
+
+```markup
+<my-component v-bind:title="title" v-bind:name="name" v-bind:age="age" />
+
+<!-- 统一放入一个 prop 对象中传入 -->
+
+<my-component v-bind:obj="{title: 'title', name: 'name', age: 'age'}" />
+
+```
+
+**也可以传入一个对象的所有 property：**
+
+{% hint style="info" %}
+如果你想要将一个对象的所有 property 都作为 prop 传入，你可以使用不带参数的 `v-bind` \(取代 `v-bind:prop-name`\)。例如，对于一个给定的对象 `post`：
+{% endhint %}
+
+```javascript
+post: {
+  id: 1,
+  title: 'My Journey with Vue'
+}
+```
+
+下面的模板：
+
+```markup
+<blog-post v-bind="post"></blog-post>
+```
+
+等价于：
+
+```markup
+<blog-post
+  v-bind:id="post.id"
+  v-bind:title="post.title"
+></blog-post>
+```
+
+### Props 的接收方式
+
+组件内部接收 `props` 时我们可以写成数组形式：
+
+```javascript
+props: ['title', 'likes', 'isPublished', 'commentIds', 'author']
+```
+
+也可以写成对象形式，如果写成对象形式的话，就需要 Props 的类型判断：
+
+```javascript
+props: {
+  title: String,
+  likes: Number,
+  isPublished: Boolean,
+  commentIds: Array,
+  author: Object,
+  callback: Function,
+  contactsPromise: Promise // or any other constructor
+}
+```
+
+### props 的类型检查
+
+`type` 可以是下列原生构造函数中的一个：
+
+* `String`
+* `Number`
+* `Boolean`
+* `Array`
+* `Object`
+* `Date`
+* `Function`
+* `Symbol`
+
+```javascript
+Vue.component('my-component', {
+  props: {
+    // 基础的类型检查 (`null` 和 `undefined` 会通过任何类型验证)
+    propA: Number,
+    // 多个可能的类型
+    propB: [String, Number],
+    // 必填的字符串
+    propC: {
+      type: String,
+      required: true
+    },
+    // 带有默认值的数字
+    propD: {
+      type: Number,
+      default: 100
+    },
+    // 带有默认值的对象
+    propE: {
+      type: Object,
+      // 对象或数组默认值必须从一个工厂函数获取
+      default: function () {
+        return { message: 'hello' }
+      }
+    },
+    // 自定义验证函数
+    propF: {
+      validator: function (value) {
+        // 这个值必须匹配下列字符串中的一个
+        return ['success', 'warning', 'danger'].indexOf(value) !== -1
+      }
+    }
+  }
+})
+```
+
+ 额外的，`type` 还可以是一个自定义的构造函数，并且通过 `instanceof` 来进行检查确认。例如，给定下列现成的构造函数：
+
+```javascript
+function Person (firstName, lastName) {
+  this.firstName = firstName
+  this.lastName = lastName
+}
+```
+
+你可以使用：
+
+```javascript
+Vue.component('blog-post', {
+  props: {
+    author: Person
+  }
+})
+```
+
+来验证 `author` prop 的值是否是通过 `new Person` 创建的。
+
+### Props 和 html-attribute
+
+{% hint style="info" %}
+**注意：**Vue 的组件中是不限制 prop 的传入数量的，如果外部传入的 prop ，组件内部没有接收，那么就会变成 **kebab-case \(短横线分隔命名\) 命名** 的方式作为自定义属性添加到组件的根元素上。  
+Vue 会选择性地对重复的 attribute 进行替换或者合并，比如，如果是重复的 input type ，那么则会替换，如果是 class、style 等，则会合并。对于绝大多数 attribute 来说，从外部提供给组件的值会替换掉组件内部设置好的值， `class` 和 `style` attribute 会稍微智能一些，即两边的值会被合并起来，从而得到最终的值。
+{% endhint %}
+
+如果你**不**希望组件的根元素继承 attribute，你可以在组件的选项中设置 `inheritAttrs: false`。例如：
+
+```javascript
+Vue.component('my-component', {
+  inheritAttrs: false,
+  // ...
+})
+```
+
+{% hint style="warning" %}
+**注意：**`inheritAttrs: false` 选项 **不会** 影响 `style` 和 `class` 的绑定。
+{% endhint %}
+
+ **vm.$attrs**
+
+`inheritAttrs: false` ****的情况很适合配合 `vm.$attrs` 来使用。`vm.$attrs`  包含了父作用域中不作为 prop 被识别 \(且获取\) 的 attribute 绑定 \(`class` 和 `style` 除外\)。当一个组件没有声明任何 prop 时，这里会包含所有父作用域的绑定 \(`class` 和 `style` 除外\)，并且可以通过 `v-bind="$attrs"` 传入内部组件，这在创建高级别的组件时非常有用。有了 `inheritAttrs: false` 和 `$attrs`，你就可以手动决定这些 attribute 会被赋予哪个元素。这个类似于 React 中的  `<MyComponent {...this.props} />`
+
+```javascript
+Vue.component('base-input', {
+  inheritAttrs: false,
+  props: ['label', 'value'],
+  template: `
+    <label>
+      {{ label }}
+      <input
+        v-bind="$attrs"
+        v-bind:value="value"
+        v-on:input="$emit('input', $event.target.value)"
+      >
+    </label>
+  `
+})
+```
+
+## 组件通讯
+
+组件通信一般分为以下几种情况：
+
+* 父子组件通信
+* 兄弟组件通信
+* 跨多层级组件通信
+* 任意组件
+
+对于以上每种情况都有多种方式去实现，接下来就来学习下如何实现。
+
+### 父子通信
+
+父组件通过 `props` 传递数据给子组件，子组件通过 `emit` 发送事件传递数据给父组件，这两种方式是最常用的父子通信实现办法。
+
+这种父子通信方式也就是典型的单向数据流，父组件通过 `props` 传递数据，子组件不能直接修改 `props`， 而是必须通过发送事件的方式告知父组件修改数据。
+
+另外这两种方式还可以使用语法糖 `v-model` 来直接实现，因为 `v-model` 默认会解析成名为 `value` 的 `prop` 和名为 `input` 的事件。这种语法糖的方式是典型的双向绑定，常用于 UI 控件上，但是究其根本，还是通过事件的方法让父组件修改数据。
+
+当然我们还可以通过访问 `$parent` 或者 `$children` 对象来访问组件实例中的方法和数据。
+
+另外如果你使用 Vue 2.3 及以上版本的话还可以使用 `$listeners` 和 `.sync` 这两个属性。
+
+`$listeners` 属性会将父组件中的 \(不含 `.native` 修饰器的\) `v-on` 事件监听器传递给子组件，子组件可以通过访问 `$listeners` 来自定义监听器。  
+`.sync` 属性是个语法糖，可以很简单的实现子组件与父组件通信
+
+```markup
+<!--父组件中-->
+<input :value.sync="value" />
+<!--以上写法等同于-->
+<input :value="value" @update:value="v => value = v"></comp>
+<!--子组件中-->
+<script>
+  this.$emit('update:value', 1)
+</script>
+```
+
+### 兄弟组件通信
+
+对于这种情况可以通过查找父组件中的子组件实现，也就是 `this.$parent.$children`，在 `$children` 中可以通过组件 `name` 查询到需要的组件实例，然后进行通信。
+
+### 跨多层次组件通信
+
+对于这种情况可以使用 Vue 2.2 新增的 API `provide / inject`，虽然文档中不推荐直接使用在业务中，但是如果用得好的话还是很有用的。
+
+假设有父组件 A，然后有一个跨多层级的子组件 B
+
+```javascript
+// 父组件 A
+export default {
+  provide: {
+    data: 1
+  }
+}
+// 子组件 B
+export default {
+  inject: ['data'],
+  mounted() {
+    // 无论跨几层都能获得父组件的 data 属性
+    console.log(this.data) // => 1
+  }
+}
+```
+
+### 任意组件
+
+这种方式可以通过 Vuex 或者 Event Bus 解决，另外如果你不怕麻烦的话，可以使用这种方式解决上述所有的通信情况
+
+## 动态组件
+
+## 分发插槽
 
