@@ -23,7 +23,7 @@
 
 ## 前端框架 <a id="frontend-frame"></a>
 
-* [Vue基础](frontend-frame/vue-ji-chu.md)
+* [Vue基础](frontend-frame/vue-basic.md)
 * [Vue框架](frontend-frame/vue-frame.md)
 
 ## 浏览器 <a id="browser"></a>
