@@ -118,7 +118,7 @@
 
 ![](../.gitbook/assets/vue-lifecycle.png)
 
-### 关于Vue生命周期的总结：
+### 关于Vue生命周期的总结
 
 在 `beforeCreate` 钩子函数调用的时候，是获取不到 `props` 或者 `data` 中的数据的，因为这些数据的初始化都在 `initState` 中。
 
@@ -134,19 +134,19 @@
 
 ## 计算属性和侦听器
 
-### 计算属性的使用场景：
+### 计算属性的使用场景
 
 {% hint style="info" %}
 当绑定在模板中的数据需要**依赖其他属性值进行计算，或者需要经过一些复杂计算、特殊处理才能渲染到页面上的时候**，我们可以使用计算属性：**computed**
 {% endhint %}
 
-### **计算属性的特性：**
+### **计算属性的特性**
 
 {% hint style="info" %}
 计算属性可以让你的绑定值依赖其他值的变化来进行动态计算，并且会根据依赖值进行缓存，只有当依赖值变化才会返回新的计算内容。
 {% endhint %}
 
-### 计算属性和侦听器的区别：
+### 计算属性和侦听器的区别
 
 {% hint style="info" %}
 **computed** 是计算属性，依赖其他属性计算值，并且 **computed** 的值有缓存，只有当计算值变化才会返回内容。
@@ -191,7 +191,7 @@ var vm = new Vue({
 设置侦听器 deep 为 true，则能开启对于对象属性的深度监听模式，也就是说，对象下的子属性发生变动，侦听器一样能够监测到变化并且触发。
 {% endhint %}
 
-### 计算属性和方法的区别：
+### 计算属性和方法的区别
 
 有的时候，计算属性和方法（methods）都可以达到相同的效果，那么它们之间的区别是什么呢？
 
@@ -830,7 +830,81 @@ Vue.component('base-input', {
 
 另外如果你使用 Vue 2.3 及以上版本的话还可以使用 `$listeners` 和 `.sync` 这两个属性。
 
-`$listeners` 属性会将父组件中的 \(不含 `.native` 修饰器的\) `v-on` 事件监听器传递给子组件，子组件可以通过访问 `$listeners` 来自定义监听器。  
+`$listeners` 属性会将父组件中的 \(不含 `.native` 修饰器的\) `v-on` 事件监听器传递给子组件，子组件可以通过访问 `$listeners` 来自定义监听器。
+
+**vm.$listener**
+
+ 简单点讲它是一个对象，里面包含了作用在这个组件上所有的监听器（监听事件），可以通过 `v-on="$listeners"` 将事件监听指向这个组件内的子元素（包括内部的子组件）。
+
+```javascript
+  <div id="app">
+    <child1
+      :p-child1="child1"
+      :p-child2="child2"
+      :p-child-attrs="1231"
+      v-on:test1="onTest1"
+      v-on:test2="onTest2">
+    </child1>
+  </div>
+   <script>
+      Vue.component("Child1", {
+        inheritAttrs: true,
+        props: ["pChild1"],
+        template: `
+        <div class="child-1">
+        <p>in child1:</p>
+        <p>props: {{pChild1}}</p>
+        <p>$attrs: {{this.$attrs}}</p>
+        <hr>
+        <child2 v-bind="$attrs" v-on="$listeners"></child2></div>`,
+        mounted: function() {
+          this.$emit("test1");
+        }
+      });
+      Vue.component("Child2", {
+        inheritAttrs: true,
+        props: ["pChild2"],
+        template: `
+        <div class="child-2">
+        <p>in child->child2:</p>
+        <p>props: {{pChild2}}</p>
+        <p>$attrs: {{this.$attrs}}</p>
+          <button @click="$emit('test2','按钮点击')">触发事件</button>
+        <hr> </div>`,
+        mounted: function() {
+          this.$emit("test2");
+        }
+      });
+      const app = new Vue({
+        el: "#app",
+        data: {
+          child1: "pChild1的值",
+          child2: "pChild2的值"
+        },
+        methods: {
+          onTest1() {
+            console.log("test1 running...");
+          },
+         onTest2(value) {
+            console.log("test2 running..." + value);
+          }
+        }
+      });
+    </script>
+```
+
+上例中，父组件在`child1`组件中设置两个监听事件`test1`和`test2`,分别在`child1`组件和`child1`组件内部的`child2`组件中执行。还设置了三个属性`p-child1`、`p-child2`、`p-child-attrs`。其中`p-child1`、`p-child2`被对应的组件的`prop`识别。所以：  
+ `p-child1`组件中`$attrs`为`{ "p-child2": "pChild2的值", "p-child-attrs": 1231 }`;  
+ `p-child2`组件中`$attrs`为`{ "p-child-attrs": 1231 }`，效果如下图：
+
+![](../.gitbook/assets/1606269234-1-.jpg)
+
+ 我们再点击`child2`组件中的按钮，触发事件，控制台可以打印出：
+
+![](../.gitbook/assets/1606269283-1-.jpg)
+
+.**sync**
+
 `.sync` 属性是个语法糖，可以很简单的实现子组件与父组件通信
 
 ```markup
@@ -877,5 +951,108 @@ export default {
 
 ## 动态组件
 
+有的时候，在不同组件之间进行动态切换是非常有用的，比如在一个多标签的界面里。上述内容可以通过 Vue 的 `<component>` 元素加一个特殊的 `is` attribute 来实现，也就是动态组件：
+
+```markup
+<!-- 组件会在 `currentTabComponent` 改变时改变 -->
+<component v-bind:is="currentTabComponent"></component>
+```
+
+在上述示例中，`currentTabComponent` 可以包括
+
+* 已注册组件的名字，或
+* 一个组件的选项对象
+
+{% hint style="info" %}
+动态组件也可以使用 keep-alive 进行缓存
+{% endhint %}
+
+## 异步组件
+
+在大型应用中，我们可能需要将应用分割成小一些的代码块，并且只在需要的时候才从服务器加载一个模块，这个就是异步组件加载。
+
+### 异步组件的全局注册
+
+```javascript
+<template>
+<div>
+    <!-- 异步组件测试
+    点击按钮后
+    第一个延迟300毫秒，从服务器加载
+    第二个不延迟从服务器加载 -->
+    <template v-if="show">
+        <later></later>
+        <later2></later2>
+    </template>
+    <button @click="toggle">加载</button>
+</div>
+</template>
+<script>
+import Vue from 'vue';
+const later = Vue.component('later', function (resolve) {
+    setTimeout(function () {
+        require(['./later.vue'], resolve)
+    }, 3000);
+});
+const later2 = Vue.component('later2', function (resolve) {
+    require(['./later2.vue'], resolve)
+});
+export default{
+    data: function () {
+        return {
+            show: false
+        };
+    },
+    components: {
+        later,
+        later2,
+    },
+    created: function () {
+
+    },
+    mounted: function () {
+    },
+    computed: {},
+    methods: {
+        toggle:function () {
+            this.show = !this.show;
+        }
+    },
+}
+</script>
+<style>
+</style>
+```
+
+### 异步组件的局部注册
+
+异步组建的局部注册唯一的区别就是 `components` 的写法
+
+```javascript
+components: {
+   AddCustomerSchedule(resolve) {
+     require(["../components/AddCustomer"], resolve);
+   },
+   AddPeopleSchedule(resolve) {
+     require(["../components/AddPeople"], resolve);
+   },
+   CustomerInfoSchedule(resolve) {
+     require(["../components/CustomerInfo"], resolve);
+   },
+   VisitRecordSchedule(resolve) {
+     require(["../components/VisitRecord"], resolve);
+   },
+},
+```
+
+## keep-alive
+
 ## 分发插槽
+
+## 参考文档
+
+* [Vue-- $attrs与$listeners的详解](https://www.jianshu.com/p/a388d38f8c69)
+* [前端面试之道](https://juejin.cn/book/6844733763675488269/section/6844733763780345869)
+* [vue异步组件\(高级异步组件\)使用场景及实践](https://segmentfault.com/a/1190000012138052)
+*  [vue按需加载组件,异步组件](https://www.cnblogs.com/jun-qi/p/10931205.html)
 
