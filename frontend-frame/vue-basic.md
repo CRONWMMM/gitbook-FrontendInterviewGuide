@@ -1,3 +1,7 @@
+---
+description: 对着 Vue 官网一行一行扒下来，知识点总结包含大部分 Vue 的基础使用内容。
+---
+
 # Vue基础
 
 ## 数据与方法
@@ -399,6 +403,8 @@ computed: {
 
 事件处理这块可能是 Vuer 用的最多的东西之一，大部分内容大家可能也了解，就没什么好说的了，就大概总结一下吧。
 
+### 事件的写法
+
 在 Vue 中有下面几种事件的写法：
 
 * **内联写法：**
@@ -449,6 +455,25 @@ computed: {
     Submit
   </button>
   ```
+
+{% hint style="warning" %}
+**注意：**不同于组件和 prop，事件名不存在任何自动化的大小写转换。而是触发的事件名需要完全匹配监听这个事件所用的名称。举个例子，如果触发一个 camelCase 名字的事件：
+
+```javascript
+this.$emit('myEvent');
+```
+
+则监听这个名字的 kebab-case 版本是不会有任何效果的：
+
+```markup
+<!-- 没有效果 -->
+<my-component v-on:my-event="doSomething"></my-component>
+```
+
+`v-on:myEvent` 将会变成 `v-on:myevent`——导致 `myEvent` 不可能被监听到。
+
+因此，推荐 **始终使用 kebab-case 的事件名**。
+{% endhint %}
 
 ### 事件修饰符
 
@@ -1110,12 +1135,127 @@ Vue 组件支持一个默认默认插槽，默认插槽有得话只能有一个�
 
 ### 作用域插槽
 
-当使用插槽的时候，父级模板里的所有内容都是在父级作用域中编译的；子模板里的所有内容都是在子作用域中编译的。也就是说，子元素没有办法访问到父模板中的内容，那么这个时候可以使用作用域插槽来将父模板里的内容传入。
+当使用插槽的时候，父级模板里的所有内容都是在父级作用域中编译的；子模板里的所有内容都是在子作用域中编译的。也就是说，子元素没有办法访问到父模板中的内容，那么这个时候可以使用作用域插槽来将父模板里的内容传入:
+
+```markup
+<!--父组件-->
+<my-comp>
+    <template v-slot:default="slotProps">
+        {{ slotProps.user.firstName }}
+    </template>
+</my-comp>
+
+<!--MyComp 组件-->
+<div>
+    <slot v-bind:user="user">
+        {{ user.lastName }}
+    <slot>
+</div>
+```
+
+如果是默认插槽的 `prop` 可以使用简写：
+
+```markup
+<!--父组件-->
+<current-user>
+    <template v-slot="slotProps">
+        {{ slotProps.user.firstName }}
+    </template>
+</current-user>
+
+<!--MyComp 组件-->
+<div>
+    <slot v-bind:user="user">
+        {{ user.lastName }}
+    <slot>
+</div>
+```
+
+{% hint style="warning" %}
+**注意** 默认插槽的缩写语法 **不能** 和具名插槽混用，因为它会导致作用域不明确
+{% endhint %}
+
+```markup
+<!--父组件-->
+<!-- 无效，会导致警告 -->
+<current-user v-slot="slotProps">
+  {{ slotProps.user.firstName }}
+  <template v-slot:other="otherSlotProps">
+    slotProps is NOT available here
+  </template>
+</current-user>
+```
+
+{% hint style="warning" %}
+只要出现多个插槽，请始终为_所有的_插槽使用完整的基于 `<template>` 的语法
+{% endhint %}
+
+```markup
+<!--父组件-->
+<current-user>
+  <template v-slot:default="slotProps">
+    {{ slotProps.user.firstName }}
+  </template>
+
+  <template v-slot:other="otherSlotProps">
+    ...
+  </template>
+</current-user>
+```
+
+可以以为结构的方式写插槽
+
+```markup
+<!--父组件-->
+<current-user>
+  <template v-slot:default="{user}">
+    {{ .user.firstName }}
+  </template>
+</current-user>
+```
+
+### 动态插槽
+
+ 动态指令参数也可以用在 `v-slot` 上，来定义动态的插槽名
+
+```markup
+<base-layout>
+  <template v-slot:[dynamicSlotName]>
+    ...
+  </template>
+</base-layout>
+```
+
+### 具名插槽缩写
+
+```markup
+<base-layout>
+  <template #header>
+    <h1>Here might be a page title</h1>
+  </template>
+
+  <p>A paragraph for the main content.</p>
+  <p>And another one.</p>
+
+  <template #footer>
+    <p>Here's some contact info</p>
+  </template>
+</base-layout>
+```
+
+加入作用域插槽
+
+```markup
+<current-user #default="slotProps">
+  {{ slotProps.user.firstName }}
+</current-user>
+```
 
 ## 参考文档
 
-* [Vue-- $attrs与$listeners的详解](https://www.jianshu.com/p/a388d38f8c69)
+* [Vue 官方文档](https://cn.vuejs.org/v2/guide/)
 * [前端面试之道](https://juejin.cn/book/6844733763675488269/section/6844733763780345869)
+* [Vue-- $attrs与$listeners的详解](https://www.jianshu.com/p/a388d38f8c69)
 * [vue异步组件\(高级异步组件\)使用场景及实践](https://segmentfault.com/a/1190000012138052)
 *  [vue按需加载组件,异步组件](https://www.cnblogs.com/jun-qi/p/10931205.html)
 
