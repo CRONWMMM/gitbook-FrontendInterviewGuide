@@ -845,15 +845,40 @@ Vue.component('base-input', {
 
 ### 父子通信
 
+#### props 和 $emit
+
 父组件通过 `props` 传递数据给子组件，子组件通过 `emit` 发送事件传递数据给父组件，这两种方式是最常用的父子通信实现办法。
 
 这种父子通信方式也就是典型的单向数据流，父组件通过 `props` 传递数据，子组件不能直接修改 `props`， 而是必须通过发送事件的方式告知父组件修改数据。
 
+#### v-model 和 .sync
+
 另外这两种方式还可以使用语法糖 `v-model` 来直接实现，因为 `v-model` 默认会解析成名为 `value` 的 `prop` 和名为 `input` 的事件。这种语法糖的方式是典型的双向绑定，常用于 UI 控件上，但是究其根本，还是通过事件的方法让父组件修改数据。
 
-当然我们还可以通过访问 `$parent` 或者 `$children` 对象来访问组件实例中的方法和数据。
+`.sync` 属性是个语法糖，可以很简单的实现子组件与父组件通信
+
+```markup
+<!--父组件中-->
+<input :value.sync="value" />
+<!--以上写法等同于-->
+<input :value="value" @update:value="v => value = v"></comp>
+<!--子组件中-->
+<script>
+  this.$emit('update:value', 1)
+</script>
+```
+
+#### $parent 和 $children 和 $ref
+
+当然我们还可以通过访问 `$parent` 或者 `$children` 对象来访问组件实例中的方法和数据，或者使用 `this.$refs[compnentRefName]` 的方式来拿到具名子元素实例。
 
 另外如果你使用 Vue 2.3 及以上版本的话还可以使用 `$listeners` 和 `.sync` 这两个属性。
+
+{% hint style="warning" %}
+**注意：**`$refs` 只会在组件渲染完成之后生效，并且它们不是响应式的。这仅作为一个用于直接操作子组件的“逃生舱”——你应该避免在模板或计算属性中访问 `$refs`。
+{% endhint %}
+
+#### $listeners
 
 `$listeners` 属性会将父组件中的 \(不含 `.native` 修饰器的\) `v-on` 事件监听器传递给子组件，子组件可以通过访问 `$listeners` 来自定义监听器。
 
@@ -928,44 +953,35 @@ Vue.component('base-input', {
 
 ![](../.gitbook/assets/1606269283-1-.jpg)
 
-.**sync**
-
-`.sync` 属性是个语法糖，可以很简单的实现子组件与父组件通信
-
-```markup
-<!--父组件中-->
-<input :value.sync="value" />
-<!--以上写法等同于-->
-<input :value="value" @update:value="v => value = v"></comp>
-<!--子组件中-->
-<script>
-  this.$emit('update:value', 1)
-</script>
-```
-
 ### 兄弟组件通信
 
 对于这种情况可以通过查找父组件中的子组件实现，也就是 `this.$parent.$children`，在 `$children` 中可以通过组件 `name` 查询到需要的组件实例，然后进行通信。
 
 ### 跨多层次组件通信
 
+#### provide / inject
+
 对于这种情况可以使用 Vue 2.2 新增的 API `provide / inject`，虽然文档中不推荐直接使用在业务中，但是如果用得好的话还是很有用的。
 
-假设有父组件 A，然后有一个跨多层级的子组件 B
+ `provide` 选项允许我们指定我们想要 **提供** 给后代组件的数据 / 方法，然后在后代组件中使用 inject 注入，就可以访问组件组件提供的 `provide` 出来的数据或者调用 `provide` 出来的方法。  
+假设有父组件 A，然后有一个跨多层级的子组件 B：
 
 ```javascript
 // 父组件 A
 export default {
   provide: {
-    data: 1
+    data: 1,
+    getMap: this.getMap // getMap 是个方法
   }
 }
 // 子组件 B
 export default {
-  inject: ['data'],
+  inject: ['data', 'getMap'],
   mounted() {
-    // 无论跨几层都能获得父组件的 data 属性
+    // 无论跨几层都能获得祖先组件的 data 属性
     console.log(this.data) // => 1
+    // 无论跨几层都能调用祖先组件的 getMap 方法
+    this.getMap() // => 1
   }
 }
 ```
@@ -973,6 +989,10 @@ export default {
 ### 任意组件
 
 这种方式可以通过 Vuex 或者 Event Bus 解决，另外如果你不怕麻烦的话，可以使用这种方式解决上述所有的通信情况
+
+### Event Bus
+
+`Event Bus` 的通信机制其实非常简单：独立与主 `Vue` 实例再创建一个单独的 `Vue` 实例，利用 `vm.$on` `vm.$off` `vm.$once` 等事件监听 / 解绑的 api ，专门就做事件处理的事情。因为他式独立的 Vue 实例，所以并不需要知道谁监听了事件，谁触发了事件。非常的方便。
 
 ## 动态组件
 
@@ -1070,7 +1090,44 @@ components: {
 },
 ```
 
+## 递归组件
+
+有的时候，本来想秀下操作，然而由于 ~~水平菜鸡~~ 业务复杂，稍有不慎我们就很容易写出死循环的递归组件：
+
+```javascript
+name: 'stack-overflow',
+template: '<div><stack-overflow></stack-overflow></div>'
+```
+
+ 类似上述的组件将会导致“max stack size exceeded”错误，所以请确保递归调用是条件性的 \(例如使用一个最终会得到 `false` 的 `v-if`\)。
+
+## 组件的循环引用
+
+组件间的循环引入的场景之一就是—— **tree 组件**。导致死循环引用的原因，其实是因为两个 vue 文件中的循环 import，webpack 打包这种文件的时候，就会不知所措，于是只能给你抛出一个错误。所以这种场景往往出现在局部注册的组件下，而 Vue.component\(\) 进行的全局组件注册由于不存在循环引用，所以没有这个问题。
+
+对于这个问题的解决方案有两种：
+
+1. 你可以在 beforeCreate 钩子函数里进行引入：
+
+   ```javascript
+   beforeCreate: function () {
+     this.$options.components.TreeFolderContents = require('./tree-folder-contents.vue').default
+   }
+   ```
+
+2. 你可以在注册局部组件的时候，使用动态组件的注册方式：
+
+   ```javascript
+   components: {
+     TreeFolderContents: () => import('./tree-folder-contents.vue')
+   }
+   ```
+
+两种解决问题的核心思想，都是延迟引入，从而规避掉 webpack 打包时可能出现的懵逼情况。
+
 ## keep-alive
+
+这个一般也就问问你这个东西是做什么用的，也不太会问别的东西，毕竟没有什么值得深挖的点。只要能答上来这个是做组件缓存的基本就没问题。想要详细了解的，这里给个传送门吧：[keep-alive](https://cn.vuejs.org/v2/api/#keep-alive)
 
 ## 分发插槽
 
