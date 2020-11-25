@@ -1103,7 +1103,7 @@ template: '<div><stack-overflow></stack-overflow></div>'
 
 ## 组件的循环引用
 
-组件间的循环引入的场景之一就是—— **tree 组件**。导致死循环引用的原因，其实是因为两个 vue 文件中的循环 import，webpack 打包这种文件的时候，就会不知所措，于是只能给你抛出一个错误。所以这种场景往往出现在局部注册的组件下，而 Vue.component\(\) 进行的全局组件注册由于不存在循环引用，所以没有这个问题。
+组件间的循环引入的场景之一就是—— **tree 组件**。导致死循环引用的原因，其实是因为两个 vue 文件中的循环 import，webpack 打包这种文件的时候，就会不知所措，于是只能给你抛出一个错误。所以这种场景往往出现在局部注册的组件下，而 `Vue.component()` 进行的全局组件注册由于不存在循环引用，所以没有这个问题。
 
 对于这个问题的解决方案有两种：
 
@@ -1127,7 +1127,9 @@ template: '<div><stack-overflow></stack-overflow></div>'
 
 ## keep-alive
 
-这个一般也就问问你这个东西是做什么用的，也不太会问别的东西，毕竟没有什么值得深挖的点。只要能答上来这个是做组件缓存的基本就没问题。想要详细了解的，这里给个传送门吧：[keep-alive](https://cn.vuejs.org/v2/api/#keep-alive)
+keep-alive 多出来两个钩子函数 `activated` 和 `deactivated` 。用 `keep-alive` 包裹的组件在切换时不会进行销毁，而是缓存到内存中并执行 `deactivated` 钩子函数，命中缓存渲染后会执行 `actived` 钩子函数。
+
+对于这个知识点，一般也就问问它是做什么用的，也不太会问别的东西，毕竟没有什么值得深挖的。只要能答上来这个是做组件缓存的基本就没问题。想要详细了解的，这里给个传送门吧：[keep-alive](https://cn.vuejs.org/v2/api/#keep-alive)
 
 ## 分发插槽
 
@@ -1307,6 +1309,72 @@ Vue 组件支持一个默认默认插槽，默认插槽有得话只能有一个�
   {{ slotProps.user.firstName }}
 </current-user>
 ```
+
+## 混入
+
+我们写一些相似度很高的组件时，经常会发现很多能够提取出来公共使用的东西部分，Vue 对于这部分内容，提供了一个混入的工具：**mixin。**`mixin` 对象，其实也就是普通的 `vue` 对象而已。
+
+### 全局混入 Mixin
+
+```javascript
+Vue.mixin({
+    beforeCreate() {
+        // ...逻辑
+        // 这种方式会影响到每个组件的 beforeCreate 钩子函数
+    }
+})
+```
+
+### 局部混入 Mixins
+
+```javascript
+const mixinObj = {
+    methods: {
+        mixinFunc() {}
+    }
+}
+
+new Vue({
+    mixins: [mixinObj],
+    created() {
+    this.mixinFunc();
+    }
+});
+```
+
+{% hint style="warning" %}
+使用 mixin 混入时：
+
+* mixin 的钩子函数会再自己组件的钩子函数之前触发
+* 对于 methods、computed 这些配置项等，Vue 会进行合并
+* 对于同名属性，Vue 会用组件里的来覆盖 mixin 的
+{% endhint %}
+
+### 自定义混入方式
+
+这个我从来没有用过，也没有被问到过，感觉不重要也不常用，需要的话自取文档：[自定义选项合并策略](https://cn.vuejs.org/v2/guide/mixins.html#%E8%87%AA%E5%AE%9A%E4%B9%89%E9%80%89%E9%A1%B9%E5%90%88%E5%B9%B6%E7%AD%96%E7%95%A5)
+
+## 自定义指令
+
+这块内容不多，但是面试的时候可能会被提一句：**你有没有写过自定义指令？**所以我建议大家直接看官网：[自定义指令](https://cn.vuejs.org/v2/guide/custom-directive.html)，官网上介绍的很详细，关于自定义指令内容大部分是使用方式、传参细节等，没有太多的坑在里面。
+
+这里提一下我认为有可能被深入问到的问题：
+
+{% hint style="info" %}
+**你觉得指令和组件有什么区别？它们各自的应用场景是什么？**
+{% endhint %}
+
+{% hint style="success" %}
+指令和组件主要的区别大概有两点：
+
+1. **业务的复杂程度：**
+
+   复杂的业务不用说，肯定没法单纯用指令就能摆平，让开发者只用指令写一个弹出框出来，肯定也不现实。所以复杂的业务必须组件，可以用自定义指令来进行辅助。并且，从配置项上也能看出来，指令是包含在组件里面的。
+
+2. **`DOM` 操作的平凡程度：**
+
+   Vue 是数据驱动视图，本身是不提倡大量操作 DOM 的。然而实际开发场景中，我们有很多情况需要必须操作 DOM 。这个时候，就可以使用自定义指令来进行 DOM 操作，看上去也比在业务中直接用 jquery 获取来的优雅和语义化。
+{% endhint %}
 
 ## 参考文档
 
