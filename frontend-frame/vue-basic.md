@@ -284,7 +284,7 @@ Vue 将被侦听的数组的变更方法进行了包裹，所以它们也将会�
 * `reverse()`
 
 {% hint style="warning" %}
- 由于 JavaScript 的限制，Vue **不能检测** 数组和对象的变化。
+ 由于 JavaScript 的限制，Vue **不能检测** 数组和对象的变化。比如，如果你使用 **`arr.newItem = " ";`** 或者 **`obj.newKey = " ";`** 这种方式为数组 / 对象新增元素，这些新增的元素 Vue 是监听不到的。
 {% endhint %}
 
 ### 不要将 `v-for` 与 `v-if` 一同使用
@@ -1048,6 +1048,69 @@ components: {
 ## keep-alive
 
 ## 分发插槽
+
+当我们需要在自定义组件中再嵌套自定义组件，就会用到 **“分发插槽”** 的功能，这个就类似于 React 中的语法 `<MyComponent>{...this.children}</MyComponent>` ：
+
+### 默认插槽
+
+Vue 组件支持一个默认默认插槽，默认插槽有得话只能有一个：
+
+```markup
+<!--父组件-->
+<my-comp>
+    Hello world!
+</my-comp>
+
+<!--MyComp 组件-->
+<div>
+    <slot><slot>
+</div>
+
+<!--最终渲染结果-->
+<div>
+    Hello world!
+</div>
+```
+
+你也可以为插槽提供一个后备用内容，当父组件没有任何东西插入的时候，后备内容就会默认显示，像这样：
+
+```markup
+<!--MyComp 组件-->
+<div>
+    <slot>Hi World!<slot>
+</div>
+```
+
+### 具名插槽
+
+具名插槽可以有很多，不过名称不能重复，具名插槽和默认插槽可以同时存在：
+
+```markup
+<!--父组件-->
+<my-comp>
+    <template v-slot:header>This is header</template>
+    <template v-slot:body>This is body</template>
+    Hello World!
+</my-comp>
+
+<!--MyComp 组件-->
+<div>
+    <slot name="header"><slot>
+    <slot name="body"><slot>
+    <slot><slot>
+</div>
+
+<!--最终渲染结果-->
+<div>
+    This is header
+    This is body
+    Hello world!
+</div>
+```
+
+### 作用域插槽
+
+当使用插槽的时候，父级模板里的所有内容都是在父级作用域中编译的；子模板里的所有内容都是在子作用域中编译的。也就是说，子元素没有办法访问到父模板中的内容，那么这个时候可以使用作用域插槽来将父模板里的内容传入。
 
 ## 参考文档
 
