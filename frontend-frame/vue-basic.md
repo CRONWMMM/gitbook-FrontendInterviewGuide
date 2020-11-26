@@ -1354,6 +1354,27 @@ new Vue({
 
 这个我从来没有用过，也没有被问到过，感觉不重要也不常用，需要的话自取文档：[自定义选项合并策略](https://cn.vuejs.org/v2/guide/mixins.html#%E8%87%AA%E5%AE%9A%E4%B9%89%E9%80%89%E9%A1%B9%E5%90%88%E5%B9%B6%E7%AD%96%E7%95%A5)
 
+### 混入和 extend
+
+Vue 里还有一个 `extend` 的 api，那么这个和 `mixin` 有什么区别呢？个人感觉这两个东西的目的都是一样的：**都是作为混入和扩展的一种方法**，只不过实现层面不同：`mixin` 是在组件层面混入，或者可以理解为对实例进行扩展；而 `extend` 是先扩展了构造函数也就是累类，然后根据这个扩展完成的类，在再进行实例化。看代码：
+
+```javascript
+// 创建组件构造器
+let Component = Vue.extend({
+  template: '<div>test</div>'
+})
+// 挂载到 #app 上
+new Component().$mount('#app')
+// 除了上面的方式，还可以用来扩展已有的组件
+let SuperComponent = Vue.extend(Component)
+new SuperComponent({
+    created() {
+        console.log(1)
+    }
+})
+new SuperComponent().$mount('#app')
+```
+
 ## 自定义指令
 
 这块内容不多，但是面试的时候可能会被提一句：**你有没有写过自定义指令？**所以我建议大家直接看官网：[自定义指令](https://cn.vuejs.org/v2/guide/custom-directive.html)，官网上介绍的很详细，关于自定义指令内容大部分是使用方式、传参细节等，没有太多的坑在里面。
@@ -1464,6 +1485,60 @@ new Vue({
 **至于最后的 JSX**
 
 这也不是 Vue 官方推荐的东西，只不过考虑到这样的语法写起来确实难受，官方提供了一个可供选择的方案而已。
+
+## 插件
+
+内容不多，推荐看下官网：[插件](https://cn.vuejs.org/v2/guide/plugins.html)。
+
+1. `Vue.use(plugin)` 注册插件
+2. 插件需要暴露一个 install 方法，接收 `Vue` 构造器和 `options` 选项作为参数：
+
+   ```javascript
+   Plugin.install = function (Vue, options) {}
+   ```
+
+3. 插件里面可以扩展 Vue 原型、扩展全局指令、扩展全局 mixin 等。
+
+## 过滤器
+
+内容不多，推荐看下官网：[过滤器](https://cn.vuejs.org/v2/guide/filters.html)。
+
+1. 过滤器的挂载：
+
+   ```javascript
+   new Vue({
+       filters: {
+           filter1 (value) {
+               return value + '';
+           }
+       }
+   });
+   ```
+
+2. 过滤器的使用：
+
+   ```markup
+   <div>{{ message | filter1 }}</div>
+   <!--或者可以写成函数调用的形式-->
+   <div>{{ message | filter1(arg1, arg2) }}</div>
+   ```
+
+   ```javascript
+   new Vue({
+       filters: {
+           filter1 (value, arg1, arg2) {
+               return value;
+           }
+       }
+   });
+   ```
+
+3. 过滤器的链式使用：
+
+   ```markup
+   <!--filter1 return 去的内容，作为参数继续传入 filter2-->
+   <div>{{ message | filter1 | filter2 }}</div>
+   ```
 
 ## 参考文档
 
